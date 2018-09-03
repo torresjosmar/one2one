@@ -7,7 +7,7 @@ $fecha_actual = date("Y-m-d G:i:s");
  ?>
 
 <?php //echo "horario:  "; 
-debug($horario);
+//debug($horario);
 //print_r($pagos);
 //exit();
 $item_id = 0;
@@ -258,7 +258,7 @@ foreach ($horario as $item) {
   <li class="list-group-item list-group-item-success" id = <?php echo $dias[$item['dia']].'_'.$cont;  ?> >Tu Clase <?php echo $cont+1; ?> : Día : <b><?php echo $dias[$item['dia']]." ". date("d/m/Y", strtotime($item['fecha_clase'])); ; ?></b> Hora : <b><?php echo ($item['hora']).':00'; ?></b>
 <a  id=<?php echo $dias[$item['dia']].'_'.$cont.'btn';  ?>  href="http://ec2-18-216-189-145.us-east-2.compute.amazonaws.com/videochat/" target="_blank" class="btn btn-success" style="float: right;" >Ir a Clase</a>
   </li>
-  <?php if($item['dia']==$dia_semana && ($item['hora'])==$hora_clase){
+  <?php if(strtotime($item['fecha_clase'])==strtotime($fecha_actual) && ($item['hora'])==$hora_clase){
     echo '<script type="text/javascript"> 
     console.log("estoy habilitado");
      console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').id);
@@ -266,22 +266,22 @@ foreach ($horario as $item) {
   
     </script>';
 }
-else if($item['dia']==$dia_semana && $item['hora']==$casi){
+else if(strtotime($item['fecha_clase'])==strtotime($fecha_actual) && $item['hora']==$casi){
 echo '<script type="text/javascript">
 console.log("casi comienzo"); 
    console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').id);
     document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.background ="#fbf589";  
    document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').style.display = "none";
     </script>';
-}else if($dia_semana>$item['dia']){
+}else if(strtotime($fecha_actual)>strtotime($item['fecha_clase']) ){
 echo '<script type="text/javascript"> 
    // console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').id);
-    document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.display= "none";  
+    document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.display= "red";  
    document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').style.display = "none";
     </script>';
 
 
-}else if($dia_semana==$item['dia'] && $hora_clase> $item['hora']){
+}else if(strtotime($fecha_actual)==strtotime($item['fecha_clase']) && $hora_clase> $item['hora']){
 echo '<script type="text/javascript"> 
    // console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').id);
     document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.display= "none";  

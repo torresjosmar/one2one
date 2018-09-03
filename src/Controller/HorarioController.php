@@ -195,7 +195,8 @@ public function gethorarionombre()
 		$session = $this->request->session();
 
 		$idprofesor = $session->consume('info');
-
+      $contador = 0;
+		$clases_inscritas = 0; 
 		$query = $this->Horario->find('all')
 		->select(['hora','dia','alumno_idalumno','alumno.nombres','alumno.apellidos'])
 		->join([
@@ -205,7 +206,7 @@ public function gethorarionombre()
                         ]
                      ]) ->where(["profesor_idprofesor =" => $idprofesor])
 						->order(['dia','hora' => 'ASC']); // Still same object, no SQL executed
-         				
+         				 
 
          foreach ($query as $item) {
              $row['hora'] = $item['hora'];
@@ -217,10 +218,89 @@ public function gethorarionombre()
              $row['plan'] = $item['plan'];
              $result[] = $row;
              unset($row);
+              $contador++;
+             $clases_inscritas++;
          }
+
     
   if (isset($result))
          {
+
+
+        $cantidad_clases = $result[0]['plan']-$clases_inscritas;
+        $tipo_plan = $result[0]['plan'];
+//-----------------------------------------------------------------------------------------------------
+  if($cantidad_clases>0){
+	$contador2=1;  
+
+
+$cantidad_clases= $cantidad_clases +1;
+
+//echo "cantidad_clases restantes: ".$cantidad_clases ;
+//echo "<br>";
+
+//echo "contador: ".$contador;
+//echo "<br>";
+for($j=0; $j <= $cantidad_clases; $j++ ){
+//echo "cantidad_clases antes del for interno: ".$cantidad_clases;
+//echo "<br>";
+
+for($i=0; $i < $contador; $i++ ){
+//echo "cantidad_clases en for interno: ".$cantidad_clases;
+//echo "</br>";
+if($cantidad_clases>0 && $clases_inscritas < $tipo_plan ){
+$query = $this->Horario->find('all')
+				->where(["alumno_idalumno =" => $idalumno])
+				->andWhere(["fecha_clase ="=> $result[$i]['fecha_clase']])
+				->andWhere(["hora ="=> $result[$i]['hora']]);
+
+
+
+				foreach ($query as $row) {
+					//print_r($row);
+		     //echo "clases semana:  ".$contador2." ".date("y-m-d",strtotime($row['fecha_clase']."+".$contador2."week")); 
+				//echo "</br>";
+				//echo "hora: ".$row['hora'];
+				//	echo "</br>";
+
+			
+			  	
+			 $key['hora'] = $row['hora'];
+             $key['dia'] = $row['dia'];
+             $key['alumno_idalumno'] = $row['alumno_idalumno'];
+             $key['fecha_clase'] = date("y-m-d",strtotime($row['fecha_clase']."+".$contador2."week")); 
+             $key['plan'] = $item['plan'];
+			 $result[] = $key;
+			  unset($key);
+			}
+		}else{
+//			echo "romper";
+//			echo "</br>";
+			break;
+		}
+
+$cantidad_clases --;
+$clases_inscritas++;
+
+	}
+//echo "cantidad_clases despues del for interno: ".$cantidad_clases;	
+//echo "</br>";
+
+
+
+$contador2++;
+//echo "contador de semanas: ".$contador2;
+//echo "</br>";
+}
+//exit();
+
+}	
+
+
+
+
+
+
          	$session->write('info',$result);
          }
          else

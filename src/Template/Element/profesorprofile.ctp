@@ -12,6 +12,7 @@ $session = $this->request->session();
 //debug($redireccion);
 //echo $nombres_horario[0]['nombre_alumno'];
   //   exit();
+debug($nombres_horario);
 $idcategoria = 0;
 $categorias;
 //echo $agrego_horario;
