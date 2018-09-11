@@ -23,7 +23,11 @@
 
 
 <div class="form-group" id="alertas">
-      
+        <?php if (isset($flagbadlogin)) {
+        ?>
+        <div class="alert alert-danger"> Error usuario o contraseña incorrectos</div>
+        <?php
+        } ?>
     </div>
     <div class="row" style="margin-top: 40px;text-align: center;
     display: block;">
@@ -56,11 +60,12 @@
 -->
 <script type='text/javascript'>
 
+var todo_correcto = true;
 function validar(){
 
 /*creo una variable de tipo booleano que en principio tendrá un valor true(verdadero),
 y que se convertirá en false(falso) cuando la condición no se cumpla*/
-var todo_correcto = true;
+
 
 console.log('click en formulario');
 
@@ -87,15 +92,12 @@ if (todo_correcto && document.getElementById("password").value!='')
 {
     document.getElementById("formulariologin").submit();
 }
-if (todo_correcto=false && document.getElementById("password").value!='') 
+
+if (!todo_correcto) 
 {
 document.getElementById("alertas").innerHTML = '<div class="alert alert-danger"> Error usuario o contraseña incorrectos</div>';
 }
-else
-{
-document.getElementById("alertas").innerHTML = '<div class="alert alert-danger"> Error usuario o contraseña incorrectos</div>';
-/*manejo de excepcion*/
-}
+
 
 }
 

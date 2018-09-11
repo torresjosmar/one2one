@@ -75,6 +75,9 @@ class ProfesorController extends AppController
     		$item['descripcion'] = $row['descripcion'];
             $item['foto_perfil'] = $row['foto_perfil'];
             $item['pais'] = $row['pais'];
+            $item['edad'] = $row['edad'];
+            $item['genero'] = $row['genero'];
+            $item['pais'] = $row['pais'];
     		$result[] = $item;
     	//	unset($item);
     	}

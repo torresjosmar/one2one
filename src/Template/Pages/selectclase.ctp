@@ -84,6 +84,9 @@ foreach ($horario as $key) {
     border-radius: 3px;
     border: 1px solid #3a87ad;
     /*background-color: #3a87ad;*/
+        text-align: center;
+    display: block;
+    margin: auto;
     
         }
 
@@ -485,7 +488,7 @@ Las clases se realizan en el aula virtual de One2one, que cuenta con muchas herr
       <input type="hidden" name="idprofesor" value="<?php echo $info['idprofesor']; ?>">
     <input type="hidden" name="idalumno" value="<?php echo $alumno['idalumno']; ?>">
     <input type="hidden" name="curso" id="curso">
-    <input type=" hidden" name="total" value="1000">
+    <input type=" hidden" name="total" id="total" value="1000">
    
     <div id="itemshorario"> 
        
@@ -569,11 +572,15 @@ document.getElementById('p2').disabled=false;
 if (cantidad==4) {
 	precio = 1200;
 	document.getElementById("precio").innerHTML=precio;
+  document.getElementById("total").value=precio;
 }
 else{
 	precio = 3240;
 		document.getElementById("precio").innerHTML=precio;
+    document.getElementById("total").value=precio;
 }
+
+cantidad = 1;
 }
 function intemclik(id, cont){
 
@@ -609,7 +616,7 @@ console.log("restante: "+cantidad);
 
 if(tipo_plan == 1){
 
-  if(cantidad<4){
+  if(cantidad<=1){
 
       document.getElementById('p3').disabled=false;
       document.getElementById("btnpaso4").disabled=false;
@@ -623,7 +630,7 @@ if(tipo_plan == 1){
 }else{
   if(tipo_plan == 2){
   
-  if(cantidad<=9){
+  if(cantidad<=1){
     document.getElementById('p3').disabled=false;
       document.getElementById("btnpaso4").disabled=false;
 }

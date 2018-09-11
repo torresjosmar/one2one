@@ -15,6 +15,8 @@ $cantidad_items =  count($horario_completo);
 ?>
 <input type="hidden" id='cantidad' name=<?php echo $info_alumno[0]->alumno['idalumno']; ?> value=<?php echo $cantidad_items;?> >
 
+<input type="hidden" id='fecha_actual' name="" value=<?php echo date("d/m/Y G:i:s",strtotime($fecha_actual));  ?>  >
+<input type="hidden" id='plan_actual' name="" value=<?php echo $horario[0]['plan'];  ?>  >
 <?php 
 
 if($horario_completo==1){
@@ -25,18 +27,23 @@ if($horario_completo==1){
 }else{
  	foreach ($horario_completo as $key) {
 
-	//echo $key['dia']."_".$key['hora'];
-	//echo "<br>";
 	
 	if(empty($key['alumno_idalumno'])){
 		$alumno_id = 0;
+    ?>
+       
+    <input type="hidden" id=<?php echo $item_id;?> class = ""  name=<?php echo $alumno_id;?> value=<?php echo $key['dia']."_".$key['hora'];?> >
+<?php  
 	}else{
 	 $alumno_id = $key['alumno_idalumno'];
-	}
+
+	?>
+<input type="hidden" id=<?php echo $item_id;?> class = <?php echo date("y-m-d",strtotime($key["fecha_clase"]))."_".$key['plan'];?>  name=<?php echo $alumno_id;?> value=<?php echo $key['dia']."_".$key['hora'];?> >
+  <?php 
+  }
  
 
 	?>
-<input type="hidden" id=<?php echo $item_id;?> name=<?php echo $alumno_id;?> value=<?php echo $key['dia']."_".$key['hora'];?> >
 
 <?php $item_id++; }
 
@@ -44,15 +51,21 @@ if($horario_completo==1){
 
     <style type="text/css">
 
-
+   .counter{ color: #ff6000;
+    font-family: Droid Sans Mono,monospace;
+    font-weight:bold;
+  font-size: 1.25rem;;
+        }
         .Table
-
         {
 
             display: table;
 
         }
 
+.col-md-3.active {
+    box-shadow: 1px 1px 3px 0px #ccc;
+}
         .Title
 
         {
@@ -86,65 +99,48 @@ if($horario_completo==1){
 
         #clase{
             height: 50px; width: 140px; 
-           position: relative;
-    display: block;
-    
-    border-radius: 3px;
-    border: 1px solid #3a87ad;
-    /*background-color: #3a87ad;*/
-    
+            position: relative;
+            display: block;
+            border-radius: 3px;
+            border: 1px solid #3a87ad;
+            /*background-color: #3a87ad;*/
         }
 
         #clase2{
              height: 50px; width: 140px; 
-           position: relative;
-    display: block;
-    
-    border-radius: 3px;
-    border: 1px solid #3a87ad;
+             position: relative;
+             display: block; 
+             border-radius: 3px;
+             border: 1px solid #3a87ad;
         }
+        
         .Heading
-
         {
-
             display: table-row;
-
             font-weight: bold;
-
             text-align: center;
             background-color: #b3d4fc;
-
         }
 
         .disp{
-
             height: 60px; width: 150px; background: #a6ed8e;
         }
+        
         .Row
-
         {
-
             display: table-row;
-
         }
 
         .Cell
-
         {
-
-            display: table-cell;
-
-         
-
-           
+            display: table-cell;  
             padding:3px 18px;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;background:#f5f5f5;background:-webkit-gradient(linear,left top,left bottom,from(#fbfbfb),to(#f5f5f5));background:-moz-linear-gradient(top,#fbfbfb,#f5f5f5);font-size:13px;width:110px;vertical-align:top;
-
         }
 
         .centered
-{
-    text-align:center;
-}
+        {
+            text-align:center;
+        }
 
     </style>
 <!--Start Page Content -->
@@ -153,7 +149,7 @@ if($horario_completo==1){
         <ul style="    margin-left: 10%;">
           <li class="das-prof active"><a data-toggle="tab" href="#home"> Mi perfil</a></li>
           <li class="das-prof"><a data-toggle="tab" href="#menu1">Mis Clases</a></li>
-          <li class="das-prof"><a data-toggle="tab" href="#menu2">Programador de Clases</a></li>
+          <li class="das-prof"><a id = '2tab' data-toggle="tab" href="#menu2">Programador de Clases</a></li>
         </ul>
       </div>
 
@@ -200,6 +196,7 @@ if($horario_completo==1){
             </button></p>
             <h3><?php echo $info_alumno[0]->alumno['nombres'].' '.$info_alumno[0]->alumno['apellidos']; ?></h3>
             <h5><?php echo $info_alumno[0]->alumno['telefono_celular']; ?></h5>
+            <h5>Disciplina Favorita <button type="button" class="btn btn-primary edit-proffesor-item" data-toggle="modal" style="float: none;"><i class="fas fa-pencil-alt"></i></button></h5>
             <br><br>
             <?php
                 if($info_alumno[0]->alumno['edad'] <= 18)
@@ -209,8 +206,13 @@ if($horario_completo==1){
                 <h5><?php echo $info_alumno[0]->alumno['nombre_responsable'].' '.$info_alumno[0]->alumno['apellido_responsable']; ?></h5>
                 <?php    
                 }
-            ?>
+            ?> 
+            <div>
+              <h4>Próxima clase en vivo en: </h4>
+            <div class= "counter" id="countdown"></div><i class="fa fa-clock-o" aria-hidden="true"></i>
+            </div>
         </div>
+       
     </div>
 
 
@@ -225,70 +227,111 @@ if($horario_completo==1){
 <div class="row" style="padding-bottom: 40px;    padding-bottom: 40px;
     padding-left: 212px;
     padding-right: 150px;">
- 
-  <div class="col-md-3"><div class="circulo-verde"><p class="title-cir"> -  Disponible </p></div></div>
-  <div class="col-md-3"><div class="circulo-rojo"><p class="title-cir"> -  Finalizado </p></div> </div>
-  <div class="col-md-3"><div class="circulo-azul"><p class="title-cir"> -  Proximo </p></div></div>
-  <div class="col-md-3"> <div class="circulo-amarrillo"><p class="title-cir"> -  Por Comenzar </p></div> </div>
- 
+ 	
+  <div class="col-md-3 active" onclick="filtrobtn(3)" style="border: 1px solid #ccc;
+    padding: 18px;"><div class="circulo-verde btn" > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  Disponible </div></div>
+  <div class="col-md-3" style="border: 1px solid #ccc;
+    padding: 18px;"  onclick="filtrobtn(2)"><div class="circulo-azul btn">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  Proximo </div></div>
+  <div class="col-md-3" style="border: 1px solid #ccc;
+    padding: 18px;" onclick="filtrobtn(1)"> <div class="circulo-amarrillo btn" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -  Por Comenzar </div> </div>
+  <div class="col-md-3" style="border: 1px solid #ccc;
+    padding: 18px;" onclick="filtrobtn(4)"> <div class="circulo-rojo btn" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -  Ver Todo </div> </div>
+  
 </div>
 
    
  <?php 
 
-$dias = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miercoles', 4 => 'Jueves', 5 => 'Viernes', 6 => 'Sabado'];
-
+$dias = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miercoles', 4 => 'Jueves', 5 => 'Viernes', 6 => 'Sabado'];  
 $cont = 0;
 $dia_semana = date("w",strtotime($fecha_actual)); //Sabemos el numero ordinal de dia en una semana
 $hora_clase = date("G",strtotime($fecha_actual));
+$semana_acutal =  date("W",strtotime($fecha_actual));
 $casi = $hora_clase + 1;
+$contador=0;
+$cantidad_clases=$horario[0]['plan'];
+$tipo_plan = $horario[0]['plan'];
+$clases_inscritas=0;
+$primera_clase = 0;
 
-      $contador=0;
-      $cantidad_clases=$horario[0]['plan'];
-      $tipo_plan = $horario[0]['plan'];
-      $clases_inscritas=0;
 if($horario!=1){
 
+?>
 
+
+
+
+<?php  
 foreach ($horario as $item) {
+ $semana_clase = date("W",strtotime($item['fecha_clase']));
  ?>
-
+   
       <ul class="list-group" style="padding-left: 10%;width: 90%;">
         
+
+  <?php if( strtotime($item['fecha_clase'])==strtotime($fecha_actual) && $item['hora']==$casi){
+if($primera_clase==0){
+$primera_clase=1;
+
+?>
+
+<input type="hidden" id='fecha_clase' name=<?php echo date("m/d/Y", strtotime($item['fecha_clase'])); ?> value= <?php echo $item['hora']; ?> >
+<?php } ?>
+<div class ="comenzar">
+
   <li class="list-group-item list-group-item-success" id = <?php echo $dias[$item['dia']].'_'.$cont;  ?> >Tu Clase <?php echo $cont+1; ?> : Día : <b><?php echo $dias[$item['dia']]." ". date("d/m/Y", strtotime($item['fecha_clase'])); ; ?></b> Hora : <b><?php echo ($item['hora']).':00'; ?></b>
 <a  id=<?php echo $dias[$item['dia']].'_'.$cont.'btn';  ?>  href="http://ec2-18-216-189-145.us-east-2.compute.amazonaws.com/videochat/" target="_blank" class="btn btn-success" style="float: right;" >Ir a Clase</a>
   </li>
-  <?php if(strtotime($item['fecha_clase'])==strtotime($fecha_actual) && ($item['hora'])==$hora_clase){
-    echo '<script type="text/javascript"> 
-    console.log("estoy habilitado");
-     console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').id);
-     document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.background = "#dff0d8";  
-  
-    </script>';
-}
-else if(strtotime($item['fecha_clase'])==strtotime($fecha_actual) && $item['hora']==$casi){
-echo '<script type="text/javascript">
+  </div>
+
+  <?php 
+  echo '<script type="text/javascript">
 console.log("casi comienzo"); 
    console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').id);
     document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.background ="#fbf589";  
-   document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').style.display = "none";
+
     </script>';
-}else if(strtotime($fecha_actual)>strtotime($item['fecha_clase']) ){
+     
+}
+else if(strtotime($fecha_actual)>strtotime($item['fecha_clase']) ){
+echo '';
+
+
+}else if(strtotime($fecha_actual)==strtotime($item['fecha_clase']) && $hora_clase< $item['hora']){
+echo '';
+
+}else if($semana_acutal==$semana_clase){
+if($primera_clase==0){
+$primera_clase=1;
+
+?>
+
+<input type="hidden" id='fecha_clase' name=<?php echo date("m/d/Y", strtotime($item['fecha_clase'])); ?> value= <?php echo $item['hora']; ?> >
+<?php } ?>
+<div class="disponible">
+  <li class="list-group-item list-group-item-success" id = <?php echo $dias[$item['dia']].'_'.$cont;  ?> >Tu Clase <?php echo $cont+1; ?> : Día : <b><?php echo $dias[$item['dia']]." ". date("d/m/Y", strtotime($item['fecha_clase'])); ; ?></b> Hora : <b><?php echo ($item['hora']).':00'; ?></b>
+<a  id=<?php echo $dias[$item['dia']].'_'.$cont.'btn';  ?>  href="http://ec2-18-216-189-145.us-east-2.compute.amazonaws.com/videochat/" target="_blank" class="btn btn-success" style="float: right;" >Ir a Clase</a>
+  </li>
+  </div>
+  <?php 
 echo '<script type="text/javascript"> 
-   // console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').id);
-    document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.display= "red";  
-   document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').style.display = "none";
+     document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.background = "#dff0d8";  
+  	 document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').style.display = "none";
     </script>';
-
-
-}else if(strtotime($fecha_actual)==strtotime($item['fecha_clase']) && $hora_clase> $item['hora']){
-echo '<script type="text/javascript"> 
-   // console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').id);
-    document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.display= "none";  
-   document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').style.display = "none";
-    </script>';
-
 }else{
+	if($primera_clase==0){
+
+$primera_clase=1; 
+?>
+
+<input type="hidden" id='fecha_clase' name=<?php echo date("m/d/Y", strtotime($item['fecha_clase'])); ?> value= <?php echo $item['hora']; ?> >
+<?php } ?>
+<div class ="proximo">
+	<li class="list-group-item list-group-item-success" id = <?php echo $dias[$item['dia']].'_'.$cont;  ?> >Tu Clase <?php echo $cont+1; ?> : Día : <b><?php echo $dias[$item['dia']]." ". date("d/m/Y", strtotime($item['fecha_clase'])); ; ?></b> Hora : <b><?php echo ($item['hora']).':00'; ?></b>
+<a  id=<?php echo $dias[$item['dia']].'_'.$cont.'btn';  ?>  href="http://ec2-18-216-189-145.us-east-2.compute.amazonaws.com/videochat/" target="_blank" class="btn btn-success" style="float: right;" >Ir a Clase</a>
+  </li>
+  </div>
+  <?php 
 echo '<script type="text/javascript"> 
    // console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').id);
     document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.background= "#d9ecf7";  
@@ -576,7 +619,16 @@ echo '<script type="text/javascript">
     </div>
   </div>
 </div>
+<?php 
+/*if( $session->read('redireccion')==1){
 
+  echo '<script type="text/javascript">
+  document.getElementById("2tab").click();
+
+  
+</script>';
+$session->write('redireccion', '0');
+}*/ ?> 
 
 <script type="text/javascript">
 	
@@ -588,12 +640,37 @@ var alumnos = [{}];
 var id_actual = document.getElementById("cantidad").name;
 var clases_actuales=0;
 var auxiliar_clases=0;
+
+
+
+////////////7
+ var _second = 1000;
+    var _minute = _second * 60;
+    var _hour = _minute * 60;
+    var _day = _hour * 24;
+    var timer;
+////////////
+var fecha_clase = document.getElementById("fecha_clase").name; 
+var hora_clase = document.getElementById("fecha_clase").value; 
+var fecha_actual = document.getElementById("fecha_actual").value; 
+
+var end = new Date(fecha_clase+' '+hora_clase+':00:00');
+console.log(fecha_clase);
+
+var plan_actual = document.getElementById("plan_actual").value;
+
+
+
+
+
+
+
+
 function sethora(){
 var xx=0;
 var c=0;
 var tot = document.getElementById("cantidad").value;	
 
-console.log(tot);
 
   
 for (var i = 0; i < 24; i++) {
@@ -611,11 +688,20 @@ for(var x = 0; x<tot; x++){
 idg[x]= document.getElementById(x).value;
 
 var y = document.getElementById(x).name;
-
+var yy = document.getElementById(x).className;
+if(y==0){
 alumnos[x] = {
   id_pocision: idg[x],
-  id_alumno: y
+  id_alumno: y,
+  fecha_de_clase: ''
 };
+}else{
+  alumnos[x] = {
+  id_pocision: idg[x],
+  id_alumno: y,
+  fecha_de_clase: yy
+};
+}
 
 //console.log(alumnos); 
 
@@ -666,13 +752,14 @@ document.getElementById(id).innerHTML = '<span> Disponible </span>';
 document.getElementById(id).style.background= "#c16f6f"; 
 hours[cont]=1;	
 auxiliar_clases--;
-
+window.confirm("Estás seguro de modificar tu clase?");
 }else if(hours[cont]==1){
 	if(auxiliar_clases<clases_actuales){
 document.getElementById(id).style.background= "#1a95cf"; 
 document.getElementById(id).innerHTML = '<span>Seleccionado</span>';	
 hours[cont]=3;	
 auxiliar_clases++;
+window.confirm("Estás seguro de modificar tu clase?");
 }
 }
 
@@ -686,14 +773,14 @@ var h = hours.length;
 var valu;
 for (var i = 0; i<h; i++){
 if(hours[i]==1 ){
-   valu = ids[i]+'_'+'0';
+     valu = ids[i]+'_'+'0'+'_'+' ';
   document.getElementById("itemshorario").innerHTML += '<input type="hidden" id="campo" name="'+ids[i]+'" value="'+valu+'" >';
 
 }else if( hours[i]==2){
 
   for (var j = 0; j < alumnos.length; j++) {
    if(alumnos[j].id_pocision == ids[i]){
-valu = alumnos[j].id_pocision+'_'+alumnos[j].id_alumno;
+valu = alumnos[j].id_pocision+'_'+alumnos[j].id_alumno+'_'+alumnos[j].fecha_de_clase;
 //console("valor del alumno: " +valu);
  document.getElementById("itemshorario").innerHTML += '<input type="hidden" id="campo" name="'+ids[i]+'" value="'+valu+'" >';
 
@@ -704,7 +791,7 @@ valu = alumnos[j].id_pocision+'_'+alumnos[j].id_alumno;
  
 }
 else if(hours[i]==3){
- valu = ids[i]+'_'+id_actual;
+ valu = ids[i]+'_'+id_actual+'_'+'cambio'+'_'+plan_actual;
 // console.log(valu);
  document.getElementById("itemshorario").innerHTML += '<input type="hidden" id="campo" name="'+ids[i]+'" value="'+valu+'" >';
 
@@ -718,6 +805,173 @@ document.getElementById("formu").submit();
 
 }
 
+function filtrobtn(val){
+
+
+	$(function() {
+  
+  // elementos de la lista
+  var menues = $("div.col-md-3 "); 
+
+  // manejador de click sobre todos los elementos
+  menues.click(function() {
+     // eliminamos active de todos los elementos
+     menues.removeClass("active");
+     // activamos el elemento clicado.
+     $(this).addClass("active");
+  });
+
+});
+
+if(val==1){
+
+
+
+	var elements = document.getElementsByClassName('disponible');
+		console.log(elements);
+		for(var i = 0; i < elements.length; i++){
+
+			elements[i].style.display = "none";
+
+		}
+
+	var elements2 = document.getElementsByClassName('proximo');
+		console.log(elements2);
+		for(var i = 0; i < elements2.length; i++){
+
+
+			elements2[i].style.display = "none";
+
+		}	
+
+		var elements3 = document.getElementsByClassName('comenzar');
+		console.log(elements3);
+		for(var i = 0; i < elements3.length; i++){
+
+			elements3[i].style.display = "block";
+
+		}
+	
+//document.getElementsByClassName("disponible").style.display = "none";
+//document.getElementsByClassName("proximo").style.display = "none";
+
+}else if(val==2){
+
+
+
+
+	var elements = document.getElementsByClassName('disponible');
+		console.log(elements);
+		for(var i = 0; i < elements.length; i++){
+
+			elements[i].style.display = "none";
+
+		}
+
+	var elements2 = document.getElementsByClassName('comenzar');
+		console.log(elements2);
+		for(var i = 0; i < elements2.length; i++){
+
+			elements2[i].style.display = "none";
+
+		}		
+
+		var elements3 = document.getElementsByClassName('proximo');
+		console.log(elements3);
+		for(var i = 0; i < elements3.length; i++){
+
+			elements3[i].style.display = "block";
+
+		}
+
+
+//	document.getElementsByClassName("disponible").style.display = "none";
+//document.getElementsByClassName("comenzar").style.display = "none";
+}else if(val==3){
+
+	var elements = document.getElementsByClassName('proximo');
+		console.log(elements);
+		for(var i = 0; i < elements.length; i++){
+
+			elements[i].style.display = "none";
+
+		}
+
+	var elements2 = document.getElementsByClassName('comenzar');
+		console.log(elements2);
+		for(var i = 0; i < elements2.length; i++){
+
+			elements2[i].style.display = "none";
+
+		}
+
+
+	var elements3 = document.getElementsByClassName('disponible');
+		console.log(elements3);
+		for(var i = 0; i < elements3.length; i++){
+
+			elements3[i].style.display = "block";
+
+		}
+
+				
+//document.getElementsByClassName("").style.display = "none";
+//document.getElementsByClassName("comenzar").style.display = "none";
+}else if(val==4){
+
+
+var elements = document.getElementsByClassName('proximo');
+		console.log(elements);
+		for(var i = 0; i < elements.length; i++){
+
+			elements[i].style.display = "block";
+
+		}
+
+	var elements2 = document.getElementsByClassName('comenzar');
+		console.log(elements2);
+		for(var i = 0; i < elements2.length; i++){
+
+			elements2[i].style.display = "block";
+
+		}
+
+
+	var elements3 = document.getElementsByClassName('disponible');
+		console.log(elements3);
+		for(var i = 0; i < elements3.length; i++){
+
+			elements3[i].style.display = "block";
+
+		}
 
 	
+
+}
+
+}
+ function showRemaining() {
+        var now = new Date();
+        var distance = end - now;
+        if (distance < 0) {
+
+            clearInterval(timer);
+            document.getElementById('countdown').innerHTML = end;
+
+            return;
+        }
+        var days = Math.floor(distance / _day);
+        var hours = Math.floor((distance % _day) / _hour);
+        var minutes = Math.floor((distance % _hour) / _minute);
+        var seconds = Math.floor((distance % _minute) / _second);
+
+        document.getElementById('countdown').innerHTML = days + ' dias, ';
+        document.getElementById('countdown').innerHTML += hours + ' horas, ';
+        document.getElementById('countdown').innerHTML += minutes + ' minutos y ';
+        document.getElementById('countdown').innerHTML += seconds + ' segundos';
+    }
+
+    timer = setInterval(showRemaining, 1000);
+	
 </script>
+

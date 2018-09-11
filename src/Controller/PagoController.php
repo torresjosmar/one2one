@@ -16,7 +16,7 @@ class PagoController extends AppController
 		$session= $this->request->session();
 
 		$informacionpago = $session->read('resumen_compra');
-
+		$idreferencia = $session->read('idreferencia');
 		$total = $informacionpago['total'];
 		$comision = $total * 0.10;
 		$total_referido_nivel1 = $comision * 0.15;
@@ -31,9 +31,14 @@ class PagoController extends AppController
 		$pago->plataforma = "MERCADOPAGO";
 		$pago->total_neto = $informacionpago['total'];
 		$pago->total_saldo = $total - $comision;
+		$pago->idreferencia = $idreferencia;
 
 		
-		$this->Pago->save($pago);
+		if(!$this->Pago->save($pago))
+		{
+			$this->redirect(['controller'=>'pages','action'=>'procesarorden']);
+		}	
+
 
 		//asignacion pago de referido primer nivel
 

@@ -61,6 +61,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/selectclase/*', ['controller' => 'Pages', 'action' => 'selectclase']);
         $routes->connect('/faq', ['controller' => 'Pages', 'action' => 'faq']);
                 $routes->connect('/terminos', ['controller' => 'Pages', 'action' => 'terminocondiciones']);
+                $routes->connect('/prueba', ['controller' => 'Pages', 'action' => 'prueba']);
 
     /**
      * ...and connect the rest of 'Pages' controller's URLs.

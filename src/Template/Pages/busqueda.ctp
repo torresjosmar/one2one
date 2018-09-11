@@ -1,4 +1,12 @@
+<?php 
+ 
+ debug($categoria);
 
+ debug($profesores);
+ debug($categoria);
+ debug($subcategoria);
+
+ ?>
 <!--Start Page Content -->
 			<div class="page-content" style="    margin-top: 18px;">
 				

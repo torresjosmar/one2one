@@ -593,16 +593,16 @@ s0.parentNode.insertBefore(s1,s0);
   </div>
   <div class="form-group">
     <label for="como te enteraste">¿Como te enteraste de nosotros?</label>
-    <select class="form-control" id="difucionp" name="difucion">
+    <select class="form-control" id="difucionp" name="difucion" onchange="validacionEnteraste()">
       <option value="google">Google</option>
       <option value="facebook">Facebook</option>
       <option value="instagram">Instagram</option>
-      <option value="otro">Otro</option>
+      <option value="referido">Referido</option>
     </select>
   </div>
 
-   <div class="form-group">
-   	<label>Codigo de referido (opcional)</label>
+   <div class="form-group" id="campocodigoreferido" style="display: none;">
+   	<label>Codigo de referido</label>
     <input type="text" class="form-control" id="idreferido" name="idreferido" style="text-transform: uppercase !important;" placeholder="XX-00-x">
   </div>
   
@@ -916,10 +916,9 @@ s0.parentNode.insertBefore(s1,s0);
     <select class="form-control" id="difuciona" name="difucion">
       <option value="google">Google</option>
       <option value="facebook">Facebook</option>
-      <option value="instagram">Instagram</option>
-      <option value="otro">Otro</option>
+      <option value="instagram">Instagram</option> 
     </select>
-  </div>
+  </div> 
 
    
 
@@ -1067,13 +1066,12 @@ if (tipo == 1) //validaciones del formulario de registro de profesor
 	
 	
 	var referido = document.getElementById("idreferido").value;
-	
-	console.log("valor de id de referido: "+ referido);
-	if (referido.length == 7 && referido[2] == '-' && referido[5] == '-' || referido.length == 0 ) 
+
+
+	if (referido.length >=7 && referido[2] == '-' && referido[referido.length-2] == '-' || referido.length == 0 ) 
 	{
 		contador ++;
 		document.getElementById("idreferido").classList.remove("errorinputfield");
-		console.log("formato de referido correcto");
 	}
 	else
 	{
@@ -1208,6 +1206,23 @@ if (tipo ==2) //validaciones del formulario de registro de alumno
 }
 
   
+}
+
+
+function validacionEnteraste()
+{
+	valor = document.getElementById("difucionp").value;
+	if (valor=='referido') 
+	{
+		document.getElementById("campocodigoreferido").style.display = "block";
+	}
+
+	else
+	{
+		document.getElementById("campocodigoreferido").style.display = "none";
+	}
+	console.log("Cambio valor de select de difucion");
+
 }
 </script>
 

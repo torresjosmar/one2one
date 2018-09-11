@@ -144,15 +144,44 @@ foreach ($horario as $key) {
 }
 
     </style>
+
+    <script type="text/javascript">
+    	
+    	  $(window).load(function(){
+                $('#onload').modal('show');
+            });
+    </script>
 <!--Start Page Content -->
+
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"  id="onload">
+
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+         
+        </div>
+        <div class="modal-body">
+        
+Le recordamos a nuestros usuarios que el horario aquí es solo para visualizar las horas de los profesores, una vez hayas elegido esta clase tendrás la opción de seleccionar tu horario, en las horas que aquí se muestran disponibles
+        </div>
+        <div class="modal-footer" style="    padding: 30px;">
+<a href="/selectclase/<?php echo $idprofesor.'-'.$info['nombres']; ?>" style="    padding: 3%;" class="btn-wi-3" id="solictar_clase">Solicitar Clase</a>
+        </div>
+      </div>
+
+    </div>
+</div>
+
 			<div class="page-content" style="    margin-top: 65px;">
-			
+		
 				<div class="shop-area shop-page bg-white-2">
 					<div class="container">
 						<div class="row">
 							<!--Start Left Side -->
 							<div class="col-md-8 left-side-wrap-v1" id="profile-info-container">
-							
+							 <a href="http://18.191.211.97/pages/lista"><i class="fas fa-arrow-left"></i> Volver a lista</a>
 								<div class="shop-content-area">
 									<div class="row">
 										<div class="clear">
@@ -569,7 +598,7 @@ foreach ($horario as $key) {
 																	</span>
 																</div>
 											
-											<a href="/selectclase/<?php echo $idprofesor.'-'.$info['nombres']; ?>" style="    padding: 3%;" class="btn-wi-3" id="solictar_clase">Solicitar Clase</a>
+											<a href="/selectclase/<?php echo $idprofesor.'-'.'shopcart'; ?>" style="    padding: 3%;" class="btn-wi-3" id="solictar_clase">Solicitar Clase</a>
 											
 											<?php  if($usuario['id_rol'] == 2){
 	             	echo "<script type='text/javascript'>

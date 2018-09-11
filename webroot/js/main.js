@@ -77,8 +77,8 @@
     	Latest Blog Area
     ------------------------------ */
     $(".blog-list").owlCarousel({
-        autoPlay: false,
-        slideSpeed: 2000,
+        autoPlay: true,
+        slideSpeed: 1000,
         pagination: true,
         navigation: false,
         items: 3,

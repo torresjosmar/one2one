@@ -7,6 +7,8 @@
  * @author hcasatti
  *
  */
+namespace App\Controller;
+use Cake\Core\Exception\Exception;
 $GLOBALS["LIB_LOCATION"] = dirname(__FILE__);
 
 class MP {
@@ -17,7 +19,7 @@ class MP {
     private $client_secret;
     private $ll_access_token;
     private $access_data;
-    private $sandbox = FALSE;
+    private $sandbox = true;
 
     function __construct() {
         $i = func_num_args();
@@ -411,7 +413,7 @@ class MP {
 }
 
 
- 
+
 
 /**
  * MercadoPago cURL RestClient
@@ -590,4 +592,4 @@ class MercadoPagoException extends Exception {
 
 //initialice objet class
 
-$mp = new MP('4139620583829949', 'FpMWzDgVlyQVmjHiQbn6LF1G6PXA7Y6z'); 
+//$mp = new MP('4139620583829949', 'FpMWzDgVlyQVmjHiQbn6LF1G6PXA7Y6z'); 

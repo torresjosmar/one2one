@@ -172,9 +172,12 @@ class PagesController extends AppController
 
         public function selectclase($idprofesor)
         {
-           // echo "estoy en select clase";
-           // exit();
-            
+           
+           //Capturo y muestro alerta de error al procesar pago desde la plataforma de mercadopago 
+            if (isset($_GET['collection_id']) && $_GET['collection_id'] == 'null' ) {
+            	$this->Flash->error('Error al procesar pago');
+            }
+
             $session= $this->request->session();
             $loguser = $this->Auth->user(); // informacion de usuario logeado
             if($loguser['id_rol'] == 2){  
@@ -244,20 +247,57 @@ class PagesController extends AppController
         {
         
         $session= $this->request->session();
-        
-     	/*require_once "mercadopago.php";
+        $resumen_compra = $session->read('resumen_compra');
  
+        //captura de pago procesado con exito
+        if (isset($_GET['collection_id'])&& $_GET['collection_id'] != 'null') {
+                $id_transaccion = $_GET['collection_id'];
+                $estado_transaccion = $_GET['collection_status'];
+
+                //segundo nivel de validacion de que el pago sea exitoso
+                if ($estado_transaccion == 'approved') {
+                    
+                    $session->write('idreferencia',$id_transaccion);
+                    $this->Flash->success('Pago procesado con exito');
+                    $this->requestAction('pago/addpago');//registro pago
+                    $this->requestAction('horario/addalumnohorario'); //registro horas seleccionadas en el horario
+                    $this->redirect(['controller' => 'pages', 'action' => 'pagoexitoso']);
+                }
+
+                else
+                {
+                    $this->Flash->success('Error al procesar el pago. Por favor confirme la información suministrada de nuevo');
+                    header("Location: http://18.191.211.97/selectclase/".$resumen_compra['idprofesor']."-failedpaymen");  
+                }
+               
+            	
+            }
+
+       
+        if ($resumen_compra['plan'] == 4) 
+        {
+            $titulo_plan = "Plan de 4 clases en one2one";
+        }
+        else
+        {
+            $titulo_plan = "Plan de 12 clases en one2one";
+        }
+       
+        $total = (int) $resumen_compra['total'];
+
+     	require_once "mercadopago.php";
+        $mp = new MP('65163981437550', 'A6P7ZRbfWNqTdIrnPzC6pyj0UIGiv1Wo');
    		      
 		$preference_data = array(
     	"items" => array(
         array(
             "id" => "Code",
-            "title" => "pago de curso",
+            "title" => $titulo_plan,
             "currency_id" => "ARS",
-            "picture_url" =>"https://www.mercadopago.com/org-img/MP3/home/logomp3.gif",
-            "description" => "descripcion de prueba pago de curso",
+            "picture_url" =>"http://18.191.211.97/img/logo/1.png",
+            "description" => "pago plan de curso (modo de plataforma de prueba)",
             "quantity" => 1,
-            "unit_price" => 1
+            "unit_price" => $total
         )
     	),
     		"payer" => array(
@@ -265,9 +305,8 @@ class PagesController extends AppController
         	"email" => "josmar.torres3@gmail.com"
     	),
     		"back_urls" => array(
-        	"success" => "http://18.191.211.97/pages/pagoexitoso",
-        	"failure" => "http://www.google.com",
-        	"pending" => "http://www.marca.com"
+        	"success" => "http://18.191.211.97/pages/procesarorden",
+        	"failure" => "http://18.191.211.97/selectclase/".$resumen_compra['idprofesor']."-failedpayment"
     	),
     		"auto_return" => "approved",
     		"payment_methods" => array(
@@ -291,24 +330,18 @@ class PagesController extends AppController
     		"expiration_date_to" => null
 		);
 
-$preference = $mp->create_preference($preference_data);
+        $preference = $mp->create_preference($preference_data);
 
-echo '<a id = "home-link" href="'.$preference["response"]["init_point"].'" name="MP-Checkout" class="orange-ar-m-sq-arall">Pay</a>';    
+        echo '<a id = "home-link" href="'.$preference["response"]["init_point"].'" name="MP-Checkout" class="orange-ar-m-sq-arall" style="visibility: hidden;">Pay</a>';    
         
         echo "<script type='text/javascript'> 
             
-            document.getElementById('home-link').click();
+        document.getElementById('home-link').click();
         
         </script>
         <script type='text/javascript' src='//resources.mlstatic.com/mptools/render.js'></script>
         ";
-        */
-	$this->requestAction('pago/addpago');//registro pago
-    $this->requestAction('horario/addalumnohorario'); //registro horas seleccionadas en el horario
-	$this->redirect(['controller' => 'pages', 'action' => 'pagoexitoso']);
-	
-
-
+        
     
     }
 
@@ -346,6 +379,12 @@ echo '<a id = "home-link" href="'.$preference["response"]["init_point"].'" name=
            $session= $this->request->session();
              $this->viewBuilder()->setLayout('default');
              $this->set('title','Preguntas Frecuentes');
+        }
+                        public function prueba()
+        {
+           $session= $this->request->session();
+             $this->viewBuilder()->setLayout('admin');
+             $this->set('title','rol admin');
         }
     
 }

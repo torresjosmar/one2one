@@ -21,11 +21,16 @@ class UsuarioController extends AppController
        $usuario = $this->Usuario->newEntity();
        if($loguser['id_rol'] == 1) // administrador 
        {
+
+        $this->viewBuilder()->setLayout('admin');
+        $this->set('title','Rol Administrador');
        
+
        }
 
        if($loguser['id_rol'] == 2) //profesor
        {
+
   
 
         if ($this->request->is('post'))
@@ -584,6 +589,24 @@ public function login()
             $user = $this->Auth->identify();
             if($user)
             {
+
+                if ($user['id_rol']==1) {
+                    
+                    $session->write('infologer','Administrador'); 
+                     $login = $this->Auth->setUser($user);
+                    if($primera == 1)
+                    return $this->redirect(['controller' => 'Usuario', 'action' => 'index']);
+                    else
+                    return $this->redirect(['controller' => $auxiliar[1], 'action' => $auxiliar[2]]);
+
+
+                //$this->Auth->setUser($user);
+                //return $this->redirect($this->Auth->redirectURL());
+            }
+            else
+            {
+                //$this->Flash->error('Usuario o Clave incorrectas, por favor intente nuevamente');
+            }
             
                 if ($user['id_rol']==2) { // profesor
                     $query = $this->Usuario->find('all')
@@ -635,8 +658,14 @@ public function login()
             }
             else
             {
+                $session->write('badlogin',1);
                 $this->Flash->error('Usuario o Clave incorrectas, por favor intente nuevamente');
             }
+        }
+
+        if ($session->check('badlogin')) {
+            $session->delete('badlogin');
+            $this->set('flagbadlogin',1);
         }
     }
     public function logout()
@@ -662,18 +691,124 @@ public function login()
     }
 
 
+    /*metodos del usuario con rol de administrador*/
+
+    public function listadoalumnos()
+    {
+        $this->viewBuilder()->setLayout('admin');
+        $this->set('title','Rol Administrador');
+
+        $query = $this->Usuario->find('all')
+                     ->select(['alumno.idalumno','alumno.nombres','alumno.apellidos','alumno.edad','alumno.telefono_celular','alumno.telefono_fijo','alumno.foto_perfil','alumno.nombre_responsable','alumno.apellido_responsable','alumno.subcategoria_idsubcategoria','alumno.provincia_idprovincia'])
+                     ->join([
+                        'alumno' => [
+                            'table' => 'alumno',
+                            'conditions' => 'idusuario = alumno.usuario_idusuario'
+                        ]
+                     ]);
+
+            foreach($query as $row)
+            {
+                $result[] = $row;
+            }  
+
+        $this->set('listadoalumnos', $result);
+
+    }
+
+    public function listadoprofesores()
+    {
+        $this->viewBuilder()->setLayout('admin');
+        $this->set('title','Rol Administrador');
+
+        $query = $this->Usuario->find('all')
+                     ->select(['profesor.idprofesor','profesor.nombres','profesor.apellidos','profesor.edad','profesor.telefono_celular','profesor.telefono_fijo','profesor.foto_perfil','profesor.especialidad','profesor.descripcion','profesor.video_presentacion','profesor.provincia_idprovincia','profesor.url_facebook','profesor.url_twitter','profesor.url_instagram','profesor.pais','profesor.genero'])
+                     ->join([
+                        'profesor' => [
+                            'table' => 'profesor',
+                            'conditions' => 'idusuario = profesor.usuario_idusuario'
+                        ]
+                     ]);
+
+        foreach($query as $row)
+        {
+            $result[] = $row;
+        } 
+
+        $this->set('listadoprofesores', $result);
+    }
+
+    public function informepagos()
+    {
+       $this->viewBuilder()->setLayout('admin');
+        $this->set('title','Rol Administrador'); 
 
 
+        $query = $this->Usuario->find('all')
+                     ->select(['alumno.idalumno','alumno.nombres','alumno.apellidos','alumno.edad','alumno.telefono_celular','alumno.telefono_fijo','alumno.foto_perfil','alumno.nombre_responsable','alumno.apellido_responsable','alumno.subcategoria_idsubcategoria','alumno.provincia_idprovincia', 'pagos.idpago', 'pagos.fecha_pago', 'pagos.plataforma', 'pagos.total_neto', 'pagos.total_comision', 'pagos.total_saldo', 'pagos.idreferencia'])
+                     ->join([
+                        'alumno' => [
+                            'table' => 'alumno',
+                            'conditions' => 'idusuario = alumno.usuario_idusuario'
+                        ]
+                     ])
+                     ->join([
+                      'pagos' => [
+                            'table' => 'pago',
+                            'conditions' => 'alumno.idalumno = pagos.idalumno'
+                      ]
+                     ]);
 
-  
+            foreach($query as $row)
+            {
+                $result[] = $row;
+            }  
 
-  
-    
- 
+              $this->set('pagos', $result);  
+    }
 
+    public function aprobacionprofesores()
+    {
+        $this->viewBuilder()->setLayout('admin');
+        $this->set('title','Rol Administrador'); 
 
+         if($this->request->is('post'))
+        {
+            $request = $this->request->data;
+            $usuario = $this->Usuario->newEntity();
+            $usuario->idusuario = $request['idprofesor'];
+            $usuario->estado_idestado = $request['estado'];
 
+            if($this->Usuario->save($usuario))
+            {
+                 $this->Flash->success('Información actualizada con éxito');
+            }
+            else
+            {
+                $this->Flash->error('Error al actualizar información');
+            }
 
+        }
 
+        $query = $this->Usuario->find('all')
+                     ->select(['profesor.idprofesor','profesor.nombres','profesor.apellidos','profesor.edad','profesor.telefono_celular','profesor.telefono_fijo','profesor.foto_perfil','profesor.especialidad','profesor.descripcion','profesor.video_presentacion','profesor.provincia_idprovincia','profesor.url_facebook','profesor.url_twitter','profesor.url_instagram','profesor.pais','profesor.genero','estado_idestado','email','idusuario'])
+                     ->join([
+                        'profesor' => [
+                            'table' => 'profesor',
+                            'conditions' => 'idusuario = profesor.usuario_idusuario'
+                        ]
+                     ])
+                     ->where(['estado_idestado' => 2]);
+
+        foreach($query as $row)
+        {
+            $result[] = $row;
+        } 
+
+        if (isset($result)) {
+            $this->set('listadoprofesores', $result);
+        }
+        
+    }
 
 }

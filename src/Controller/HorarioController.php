@@ -14,10 +14,16 @@ class HorarioController extends AppController
 	public function addhorario()
 	{
 		$session = $this->request->session();
+
+		$dias = [0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'];
 		$info = $session->consume('info');
 		$idprofesor = $info['idprofesorhorario'];
 		unset($info['idprofesorhorario']);
-
+		$fecha_actual = date('Y-m-d');
+		$hora_acutal = date("Y-m-d G:i:s");
+		
+		$hora_clase = date("G",strtotime($hora_acutal));
+		$dia_semana_compra = date("w",strtotime($fecha_actual));
 	$this->Horario->deleteAll(['profesor_idprofesor =' => $idprofesor]); // borro la informacion actual del profesor para actualizar la tabla horario;
 
 		foreach ($info as $itemhorario) {
@@ -25,6 +31,8 @@ class HorarioController extends AppController
 			$dia = $item[0];
 			$hora = $item[1];
 			$idalumno = $item[2];
+			$fecha_clase = $item[3];
+
 			
 			$horario = $this->Horario->newEntity();
 
@@ -32,9 +40,32 @@ class HorarioController extends AppController
 			$horario->dia = $dia;
 			$horario->profesor_idprofesor = $idprofesor;
 			$horario->alumno_idalumno = $idalumno;
+			
+			if($fecha_clase !=' '){
+				if($fecha_clase == 'cambio'){
+					  if($dia_semana_compra==$item[0]){
+				
+					$horario->fecha_clase = date("y-m-d",strtotime($dias[$dia]."+1 week"));
+					$horario->plan = $item[4];
+				}else{
 
+					$horario->fecha_clase = date("y-m-d",strtotime($dias[$dia]."+0 week"));
+					$horario->plan = $item[4];
+
+				}
+
+
+				}else{
+
+			$horario->fecha_clase = date("y-m-d",strtotime($item[3]."+0 week"));
+		
+			$horario->plan = $item[4];
+		}
+
+		}
 			$this->Horario->save($horario);
 		}
+
 		  $this->Flash->success('Horario Actualizado');
 		$this->redirect(['controller' => 'usuario', 'action' => 'index']);
 	}
@@ -54,6 +85,9 @@ class HorarioController extends AppController
              $row['hora'] = $item['hora'];
              $row['dia'] = $item['dia'];
              $row['alumno_idalumno'] = $item['alumno_idalumno'];
+             $row['fecha_clase'] = $item['fecha_clase'];
+             $row['plan'] = $item['plan'];
+
              $result[] = $row;
              unset($row);
          }
@@ -77,9 +111,9 @@ class HorarioController extends AppController
 		$clases_inscritas = 0;
 		$idalumno = $session->consume('info');
 		$query = $this->Horario->find('all')
-		
-				->where(["alumno_idalumno =" => $idalumno]);
-
+			->select(['hora','dia','alumno_idalumno','fecha_clase','plan'])
+				->where(["alumno_idalumno =" => $idalumno])
+				->order(['fecha_clase','hora' => 'ASC']); // Still same object, no SQL executed
 		 foreach ($query as $item) {
              $row['hora'] = $item['hora'];
              $row['dia'] = $item['dia'];
@@ -195,20 +229,34 @@ public function gethorarionombre()
 		$session = $this->request->session();
 
 		$idprofesor = $session->consume('info');
-      $contador = 0;
+      	$contador = 0;
 		$clases_inscritas = 0; 
+		
+
+$query1 = $this->Horario->find('all')
+		->select(['alumno_idalumno'])
+		->where(["profesor_idprofesor =" => $idprofesor])
+		->andWhere(["alumno_idalumno !="=> 0])
+		->group(['alumno_idalumno']);
+
+foreach ($query1 as $keyyy ) {
+
+		unset($query);	
+
 		$query = $this->Horario->find('all')
-		->select(['hora','dia','alumno_idalumno','alumno.nombres','alumno.apellidos'])
+		->select(['hora','dia','alumno_idalumno','alumno.nombres','alumno.apellidos','fecha_clase','plan'])
 		->join([
                         'alumno' => [
                             'table' => 'alumno',
                             'conditions' => 'alumno_idalumno = alumno.idalumno'
                         ]
                      ]) ->where(["profesor_idprofesor =" => $idprofesor])
-						->order(['dia','hora' => 'ASC']); // Still same object, no SQL executed
+						->andWhere(["alumno_idalumno ="=> $keyyy['alumno_idalumno']])
+						->order(['fecha_clase','hora' => 'ASC']); // Still same object, no SQL executed
          				 
 
          foreach ($query as $item) {
+  //       	print_r($item);
              $row['hora'] = $item['hora'];
              $row['dia'] = $item['dia'];
              $row['alumno_idalumno'] = $item['alumno_idalumno'];
@@ -216,19 +264,31 @@ public function gethorarionombre()
          	 $row['apellido_alumno']	 = $item['alumno']['apellidos'];
 			 $row['fecha_clase'] = $item['fecha_clase'];
              $row['plan'] = $item['plan'];
+             $planc = $item['plan'];
              $result[] = $row;
              unset($row);
               $contador++;
              $clases_inscritas++;
          }
 
-    
-  if (isset($result))
-         {
+   
+  
+   /*   unset($query);
+$query = $this->Horario->find('all')
+		->select(['plan'])
+		->where(["profesor_idprofesor =" => $idprofesor])
+		->group(['plan']);
 
 
-        $cantidad_clases = $result[0]['plan']-$clases_inscritas;
-        $tipo_plan = $result[0]['plan'];
+$plan_total = 0;
+foreach ($query as $key ) {
+	$plan_total += $key['plan'];
+
+}
+
+*/
+        $cantidad_clases = $planc - $clases_inscritas;
+        $tipo_plan =  $planc ;
 //-----------------------------------------------------------------------------------------------------
   if($cantidad_clases>0){
 	$contador2=1;  
@@ -250,14 +310,14 @@ for($i=0; $i < $contador; $i++ ){
 //echo "</br>";
 if($cantidad_clases>0 && $clases_inscritas < $tipo_plan ){
 $query = $this->Horario->find('all')
-				->where(["alumno_idalumno =" => $idalumno])
+				->where(["alumno_idalumno =" => $result[$i]['alumno_idalumno']])
 				->andWhere(["fecha_clase ="=> $result[$i]['fecha_clase']])
 				->andWhere(["hora ="=> $result[$i]['hora']]);
 
 
 
 				foreach ($query as $row) {
-					//print_r($row);
+				
 		     //echo "clases semana:  ".$contador2." ".date("y-m-d",strtotime($row['fecha_clase']."+".$contador2."week")); 
 				//echo "</br>";
 				//echo "hora: ".$row['hora'];
@@ -268,6 +328,8 @@ $query = $this->Horario->find('all')
 			 $key['hora'] = $row['hora'];
              $key['dia'] = $row['dia'];
              $key['alumno_idalumno'] = $row['alumno_idalumno'];
+             $key['nombre_alumno']	 = $result[$i]["nombre_alumno"];
+         	 $key['apellido_alumno']	 = $result[$i]["apellido_alumno"];
              $key['fecha_clase'] = date("y-m-d",strtotime($row['fecha_clase']."+".$contador2."week")); 
              $key['plan'] = $item['plan'];
 			 $result[] = $key;
@@ -295,9 +357,12 @@ $contador2++;
 //exit();
 
 }	
+}
 
-
-
+//print_r($result);
+//exit();
+if (isset($result))
+         {
 
 
 
@@ -379,6 +444,9 @@ if(isset($result)){
 		//print_r($informacionhorario);
 		//echo "</br>";
 		$fecha_actual = date('Y-m-d');
+		$hora_acutal = date("Y-m-d G:i:s");
+		
+		$hora_clase = date("G",strtotime($hora_acutal));
 		$dia_semana_compra = date("w",strtotime($fecha_actual));
 		//echo "dia_semana_compra "." ".$dia_semana_compra."</br>";;
 		//echo "fecha_actual"." ".$fecha_actual."</br>";
@@ -394,7 +462,7 @@ if(isset($result)){
 		foreach ($informacionhorario as $item) {
 
 			$segmento = explode('_', $item);
-		  if($dia_semana_compra==$segmento[0]){
+		  if($dia_semana_compra==$segmento[0] && $hora_acutal>$segmento[1]){
 			
 			$fecha_clase[$contador] = date("y-m-d",strtotime($dias[$segmento[0]]."+1 week"));
 			$hora_clase[$contador]= $segmento[1];

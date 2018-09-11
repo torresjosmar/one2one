@@ -1,3 +1,6 @@
+<script type="text/javascript">
+	sessionStorage.clear();
+</script>
 <div class="wrapper">
 		
 
