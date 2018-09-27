@@ -59,6 +59,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/perfilprofesor/*', ['controller' => 'Pages', 'action' => 'perfilprofesor']);
     $routes->connect('/quienes-somos', ['controller' => 'Pages', 'action' => 'quienes', 'quienes']);
     $routes->connect('/selectclase/*', ['controller' => 'Pages', 'action' => 'selectclase']);
+    $routes->connect('/generarsala/*', ['controller' => 'Usuario', 'action' => 'generarsala']); 
         $routes->connect('/faq', ['controller' => 'Pages', 'action' => 'faq']);
                 $routes->connect('/terminos', ['controller' => 'Pages', 'action' => 'terminocondiciones']);
                 $routes->connect('/prueba', ['controller' => 'Pages', 'action' => 'prueba']);

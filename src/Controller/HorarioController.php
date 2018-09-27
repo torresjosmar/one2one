@@ -111,7 +111,14 @@ class HorarioController extends AppController
 		$clases_inscritas = 0;
 		$idalumno = $session->consume('info');
 		$query = $this->Horario->find('all')
-			->select(['hora','dia','alumno_idalumno','fecha_clase','plan'])
+			->select(['hora','dia','alumno_idalumno','fecha_clase','plan','profesor.idprofesor', 'profesor.nombres','profesor.apellidos','profesor.session_id','profesor.foto_perfil']) 
+				->join([
+					'profesor' => 
+					[
+						'table' => 'profesor',
+						'conditions' => 'profesor_idprofesor = profesor.idprofesor'
+					]
+				])
 				->where(["alumno_idalumno =" => $idalumno])
 				->order(['fecha_clase','hora' => 'ASC']); // Still same object, no SQL executed
 		 foreach ($query as $item) {
@@ -120,6 +127,11 @@ class HorarioController extends AppController
              $row['alumno_idalumno'] = $item['alumno_idalumno'];
              $row['fecha_clase'] = $item['fecha_clase'];
              $row['plan'] = $item['plan'];
+             $row['idprofesor'] = $item->profesor['idprofesor'];
+             $row['prof_nombres'] = $item->profesor['nombres'];
+             $row['prof_apellidos'] = $item->profesor['apellidos'];
+             $row['prof_fotoperfil'] = $item->profesor['foto_perfil'];
+             $row['prof_sessionid'] = $item->profesor['session_id'];
 
              $result[] = $row;
              $contador++;
@@ -152,6 +164,14 @@ for($i=0; $i < $contador; $i++ ){
 //echo "</br>";
 if($cantidad_clases>0 && $clases_inscritas < $tipo_plan ){
 $query = $this->Horario->find('all')
+				->select(['hora','dia','alumno_idalumno','fecha_clase','plan','profesor.idprofesor', 'profesor.nombres','profesor.apellidos','profesor.session_id']) 
+				->join([
+					'profesor' => 
+					[
+						'table' => 'profesor',
+						'conditions' => 'profesor_idprofesor = profesor.idprofesor'
+					]
+				])
 				->where(["alumno_idalumno =" => $idalumno])
 				->andWhere(["fecha_clase ="=> $result[$i]['fecha_clase']])
 				->andWhere(["hora ="=> $result[$i]['hora']]);
@@ -172,9 +192,13 @@ $query = $this->Horario->find('all')
              $key['alumno_idalumno'] = $row['alumno_idalumno'];
              $key['fecha_clase'] = date("y-m-d",strtotime($row['fecha_clase']."+".$contador2."week")); 
              $key['plan'] = $item['plan'];
+             $key['idprofesor'] = $item->profesor['idprofesor'];
+             $key['prof_nombres'] = $item->profesor['nombres'];
+             $key['prof_apellidos'] = $item->profesor['apellidos'];
+             $key['prof_sessionid'] = $item->profesor['session_id'];
 			 $result[] = $key;
 			  unset($key);
-			}
+			} 
 		}else{
 //			echo "romper";
 //			echo "</br>";
@@ -197,16 +221,6 @@ $contador2++;
 //exit();
 
 }	
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -374,7 +388,7 @@ if (isset($result))
          }
   
 		$this->redirect(['controller' => 'usuario', 'action' => 'index']);
-	}
+}
 
 
 
@@ -509,5 +523,106 @@ if(isset($result)){
 		$this->redirect(['controller'=>'pages','action'=>'procesarorden']);
 
 	}
+
+	/*Metodos finales de obtencion de horario por parte del alumno*/
+	public function obtenerhorarioalumno()
+	{
+		$session = $this->request->session();
+
+		$idalumno = $session->consume('info');
+		$query = $this->Horario->find('all')
+				->select(['idhorario','hora','dia','alumno_idalumno','fecha_clase','plan','profesor.idprofesor', 'profesor.nombres','profesor.apellidos','profesor.session_id','profesor.foto_perfil','plan']) 
+				->join([
+					'profesor' => 
+					[
+						'table' => 'profesor',
+						'conditions' => 'profesor_idprofesor = profesor.idprofesor'
+					]
+				])
+				->where(["alumno_idalumno =" => $idalumno])
+				->andWhere(["'plan' !="=> 0]);
+
+		 foreach ($query as $item) {
+             $result['idhorario'] = $item['idhorario'];
+             $result['hora'] = $item['hora'];
+             $result['dia'] = $item['dia'];
+             $result['profesor_idprofesor'] = $item->profesor['idprofesor'];
+             $result['profesor_nombres'] = $item->profesor['nombres'];
+             $result['profesor_apellidos'] = $item->profesor['apellidos'];
+             $result['profesor_fotoperfil'] = $item->profesor['foto_perfil'];
+             $result['profesor_sessionid'] = $item->profesor['session_id'];
+             $result['fecha_clase'] = $item['fecha_clase'];
+             $result['plan'] = $item['plan'];
+         }
+
+         if (!isset($result)) {
+         	$result = 1;
+         }
+         else
+         {
+         	$queryprofesor = $this->Horario->find('all')
+							 ->where(["profesor_idprofesor =" => $result['profesor_idprofesor']]);
+
+			foreach ($queryprofesor as $item) {
+				$row['idhorario'] = $item['idhorario'];
+            	$row['hora'] = $item['hora'];
+            	$row['alumno_idalumno'] = $item['alumno_idalumno'];
+            	$row['profesor_idprofesor'] = $item['profesor_idprofesor'];
+            	$row['fecha_clase'] = $item['fecha_clase'];
+            	$row['plan'] = $item['plan'];
+            	$horarionprofesor[]=$row;
+            	unset($row);
+			}
+
+			$result['horario_profesor'] = $horarionprofesor; 
+							 
+         }
+
+         $session->write('info',$result);
+         $this->redirect(['controller' => 'usuario', 'action' => 'index']);
+
+	}
+
+	public function obtenerclasesprofesor()
+	{
+		$session = $this->request->session();
+
+		$idprofesor = $session->consume('info');
+		$query = $this->Horario->find('all')
+				->select(['idhorario','hora','dia','fecha_clase','plan','alumno.idalumno', 'alumno.nombres','alumno.apellidos','alumno.foto_perfil','plan']) 
+				->join([
+					'alumno' => 
+					[
+						'table' => 'alumno',
+						'conditions' => 'alumno_idalumno = alumno.idalumno'
+					]
+				])
+				->Where(["plan !="=> 0])
+				->andWhere(["profesor_idprofesor =" => $idprofesor])
+				;
+
+		 foreach ($query as $item) {
+             $result['idhorario'] = $item['idhorario'];
+             $result['hora'] = $item['hora'];
+             $result['dia'] = $item['dia'];
+             $result['alumno_idalumno'] = $item->alumno['idalumno'];
+             $result['alumno_nombres'] = $item->alumno['nombres'];
+             $result['alumno_apellidos'] = $item->alumno['apellidos'];
+             $result['alumno_fotoperfil'] = $item->alumno['foto_perfil'];
+             $result['fecha_clase'] = $item['fecha_clase'];
+             $result['plan'] = $item['plan'];
+             $resultQuery[] = $result;
+         }
+
+         if (!isset($resultQuery)) {
+         	$resultQuery = 1;
+         }
+        
+
+         $session->write('info',$resultQuery);
+         $this->redirect(['controller' => 'usuario', 'action' => 'index']);
+
+	}
+
 
 }

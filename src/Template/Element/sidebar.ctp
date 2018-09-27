@@ -2,6 +2,20 @@
 							<div class="col-md-4 right-side-wrap-v1" style="margin-top: 1em;">
 								<div class="widget-wrap">
 									<aside class="widget widget-tagcloud-list">
+										<h3 class="widget-title-v2">Nombre Profesor</h3>
+										<div class="widget-content">
+											<form method="POST" action="busqueda">
+											<div class="input-group">
+      											<input type="text" class="form-control" name="buscar" placeholder="Nacho, Matias, William">
+      											<span class="input-group-btn">
+        											<button class="btn btn-danger btn-search" type="submit"><i class="fa fa-search"></i></button>
+      											</span>
+    											</div><!-- /input-group -->
+    										</form>
+										</div>
+									</aside>
+									
+									<aside class="widget widget-tagcloud-list">
 										<h3 class="widget-title-v2">¿Qué quieres aprender?</h3>
 										<div class="widget-content">
 											<form method="POST" action="busqueda">
@@ -19,8 +33,15 @@
 										<div class="widget-content">
 											<form method="POST" action="busqueda">
 											<div class="input-group">
-      											<input type="number" class="form-control" name="buscar" placeholder="Edades">
-      											<span class="input-group-btn">
+      											<select class="form-control" id="edad" name="buscar">
+                                                                         <option value="18-24">18-24</option>
+                                                         <option value="25-34">25-34</option>
+                                                         <option value="35-44">35-44</option>
+                                                         <option value="45-54">45-54</option>
+                                                         <option value="55-64">55-64</option>
+                                                           <option value="65">65 en adelante</option>
+                                                       </select>
+                                                                        <span class="input-group-btn">
         											<button class="btn btn-danger btn-search" type="submit"><i class="fa fa-search"></i></button>
       											</span>
     											</div><!-- /input-group -->

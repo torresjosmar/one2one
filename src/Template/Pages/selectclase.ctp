@@ -1,5 +1,8 @@
 <?php 
-
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+$fecha_actual = date("Y-m-d G:i:s");
+$dia_semana = date("w",strtotime($fecha_actual)); 
+$hora_clase = date("G",strtotime($fecha_actual));
 foreach ($info_profesor as $key) {
 		$info = $key;
 	}
@@ -140,6 +143,15 @@ foreach ($horario as $key) {
 {
     text-align:center;
 }
+.title-m {
+    width: 50%;
+    text-align: center;
+    display: block;
+    margin: auto;
+}
+h4.modal-title {
+    font-size: 32px;
+}
 
     </style>
 
@@ -183,8 +195,7 @@ foreach ($horario as $key) {
                                       }
                       
                                         ?>
-        
-        <i class="far fa-check-circle"></i>     
+           
     </div>
   </div>
   <div class="col-md-8">
@@ -326,7 +337,7 @@ foreach ($horario as $key) {
         $cc++;
     ?>
 
-      <div class="Cell" style=" height: 25px; width: 120px; color: #fff"  id=<?php echo $j."_".$i;?> onclick="intemclik('<?php echo  $j.'_'.$i; ?>',<?php echo $cc;?>)" >
+      <div class="Cell" style=" height: 25px; width: 120px; color: #fff"  id=<?php echo $j."_".$i;?> onclick="intemclik('<?php echo  $j.'_'.$i; ?>','<?php echo $cc;?>','<?php echo $dia_semana;?>','<?php echo $hora_clase; ?>')" >
       </div>    
       <?php    } ?>   
 
@@ -382,11 +393,11 @@ foreach ($horario as $key) {
                                           
                                         </div>
   <div class="col-md-9" style="    margin-top: 20px;margin-bottom: 30px;">  
-    <p class="title-r">Profesor: <?php echo $info['nombres'].' '.$info['apellidos']; ?></p>
-    <p class="title-r">Pais: <?php echo $this->Html->image(
+    <p class="title-r"><b>Profesor:&nbsp;</b> <?php echo $info['nombres'].' '.$info['apellidos']; ?></p>
+    <p class="title-r"><b>Pais:&nbsp;</b> <?php echo $this->Html->image(
                         "bandera/".$info['pais'].'.png', 
                         ["alt" => "pais", "style" => "width: 24px; heiht: 24px;"]); ?></p>
-    <p class="title-r">Lección: <span id="leccion-text"></span></p>
+    <p class="title-r"><b>Lección:&nbsp;</b> <span id="leccion-text"></span></p>
   
   </div>
 
@@ -396,39 +407,56 @@ foreach ($horario as $key) {
     
         <h4 style="float: right;
     display: block;" class="title-t"> <div id="precio" style="    float: right;
-    display: block;"></div>Total: $ </h4>
+    display: block;"></div><b>Total:&nbsp; </b>$ </h4>
 <br><br>
     <h4 style="text-align: left;" class="title-t">Metodo de pago</h4>
     <div class="row" style="margin-bottom: 3em;">
       <div class="col-md-6" style="text-align: center;">
 
-        <select class="form-control">
-  <option>Mercado Pago</option>
-   
-</select>
-       <!-- <?php 
+       <?php 
       echo $this->Html->image("mercadopago-logo.png", 
                   ["alt" => "Mercadopago",
-                  "style" => "width: 300px; margin: auto;"
+                  "style" => "width: 200px; margin: auto; float: left;padding: 6%;"
                   ]);
-     ?> -->
+     ?> 
       </div>
-      <div class="col-md-6" style="text-align: center;">
-       <!-- <?php 
-      echo $this->Html->image("paypal_PNG23.png", 
-                  ["alt" => "paypal",
-                  "style" => "width: 300px; margin: auto;"
-                  ]);
-     ?> -->
-      </div>
+      
     </div>
   
 
           </div>
-              <button class="btn btn-default new" style="float: left;" onclick="navtabs(3)">Anterior</button>
-          <div class="col-md-12" style="margin-top: 1em;">
+     
 
-    <button class="btn btn-default btn-wi-4" style="float: right;" onclick="reservar()">Pagar</button>
+              <div class="col-md-4">         <button class="btn btn-default new" style="float: left;" onclick="navtabs(3)">Anterior</button></div>
+          <div class="col-md-8" style="margin-top: 1em;">
+
+            <button type="button" class="btn btn-default btn-wi-4 btn-info btn-lg" data-toggle="modal" data-target="#myModal">Pagar</button>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <div class="title-m"> <h4 class="modal-title">Excelente!<i class="fas fa-check-circle" style="    font-size: 40px;"></i> </h4></div>
+       
+      </div>
+      <div class="modal-body">
+        <p>Ahora te redireccionaremos a MERCADO PAGO para que realices tu compra, una vez realizada podras disfrutar de tus clases con el profesor que has elegido. </p>
+      </div>
+      <div class="modal-footer">
+           <button class="btn btn-default btn-wi-3" style="float: right;" onclick="reservar()">Pagar</button>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
   </div>
       </div>
     </div>
@@ -484,7 +512,7 @@ Las clases se realizan en el aula virtual de One2one, que cuenta con muchas herr
 
               
   <form action="" method="POST" id= "formu">
-    
+    <div style="display: none;">
       <input type="hidden" name="idprofesor" value="<?php echo $info['idprofesor']; ?>">
     <input type="hidden" name="idalumno" value="<?php echo $alumno['idalumno']; ?>">
     <input type="hidden" name="curso" id="curso">
@@ -494,7 +522,7 @@ Las clases se realizan en el aula virtual de One2one, que cuenta con muchas herr
        
     </div>
     
-
+</div>
 </form> 
 
 <script type="text/javascript">
@@ -582,13 +610,17 @@ else{
 
 cantidad = 1;
 }
-function intemclik(id, cont){
+function intemclik(id, cont,dia,hora){
 
-console.log("id: "+id+" cont "+cont);
-
+console.log("dia: "+dia+" hora "+hora+"contador: "+id);
+var rango = id.split("_");
+var diax = rango[0];
+var horax = rango[1];
 
 console.log("plan: "+cantidad);
-
+if(dia == diax && hora == horax){
+  alert("Debido a que la hora actual ya inicio, no puedes seleccionar este horario pero tenemos muchas más opciones para ti para que continúes disfrutando de la experiencia ONE2ONE");
+}else{
 if(hours[cont]==1){
 if(cantidad>0){
 document.getElementById(id).style.background= "#bb3b3b"; 
@@ -640,11 +672,11 @@ else {
 
       document.getElementById('p3').disabled=true;
       document.getElementById("btnpaso4").disabled=true;
-  }
+    }
 
+    }
   }
 }
-
 //console.log(hours);
 //console.log(ids);
 

@@ -4,7 +4,10 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\TableRegistry;
-
+include 'opentok.phar';
+use OpenTok\OpenTok;
+use OpenTok\MediaMode;
+use OpenTok\ArchiveMode;
 
 /**
  * Usuario Controller
@@ -14,7 +17,7 @@ class UsuarioController extends AppController
 {
     public function index() // metodo utilizado para el perfil de usuario
     {
-
+        
        $this->set('title','perfil de usuario');
        $loguser = $this->Auth->user(); // informacion de usuario logeado
        $session = $this->request->session();
@@ -41,14 +44,22 @@ class UsuarioController extends AppController
             {  // $session = $this->request->sesion();    
                 $session->write('info',$request);
                 $this->requestAction('/horario/addhorario'); // cargar items a la tabla horario
-                
                 $session->write('redireccion', '1');
-
-               
-               // exit();
-                //$this->set('agrego_horario',$session->consume('info'));
-
             }
+
+            if (isset($request['confirmacioncodigoreferido'])) // actualizar o cargar informacion de referido 
+            {
+
+                $info['idprofesor'] = $request['idprofesor'];
+                $info['codigoreferido'] = $request['confirmacioncodigoreferido'];
+
+                $session->write('info',$info);
+                $this->requestAction('/profesor/setreferido');
+
+                
+            }
+
+
 
             if(isset($request['profesor_descripcion'])) // actualizar descripcion
             {
@@ -163,7 +174,7 @@ class UsuarioController extends AppController
         }
 
         $query = $this->Usuario->find('all')
-                     ->select(['profesor.idprofesor','profesor.nombres','profesor.apellidos','profesor.edad','profesor.telefono_celular','profesor.telefono_fijo','profesor.foto_perfil','profesor.especialidad','profesor.descripcion','profesor.video_presentacion','profesor.provincia_idprovincia','profesor.url_facebook','profesor.url_twitter','profesor.url_instagram','profesor.pais','profesor.genero','profesor.idreferido'])
+                     ->select(['profesor.idprofesor','profesor.nombres','profesor.apellidos','profesor.edad','profesor.telefono_celular','profesor.telefono_fijo','profesor.foto_perfil','profesor.especialidad','profesor.descripcion','profesor.video_presentacion','profesor.provincia_idprovincia','profesor.url_facebook','profesor.url_twitter','profesor.url_instagram','profesor.pais','profesor.genero','profesor.idreferido','profesor.session_id'])
                      ->join([
                         'profesor' => [
                             'table' => 'profesor',
@@ -198,6 +209,11 @@ class UsuarioController extends AppController
          $session->write('info',$result[0]->profesor['idprofesor']); // obtener horario con nombre
         $this->requestAction('horario/gethorarionombre');
         $this->set('nombres_horario',$session->consume('info'));//obtener pagos del profesor
+
+
+        $session->write('info',$result[0]->profesor['idprofesor']); // obtener horario con nombre
+        $this->requestAction('horario/obtenerclasesprofesor');
+        $this->set('horarioClases',$session->consume('info'));//obtener pagos del profesor
         
   //      $session->write('info',$result[0]->profesor['idprofesor']); // obtener horario profesor
         //print_r($info);
@@ -235,7 +251,6 @@ class UsuarioController extends AppController
             }
               if(isset($request['alum_nombres'])) // actualizar iformacion personal
             {
-        
 
                       $iduser = $loguser['id'];
         
@@ -253,34 +268,30 @@ class UsuarioController extends AppController
 
             $hasher = new DefaultPasswordHasher;
 
-            if(!$request['alum_clave']==""){   
+            if(!$request['alum_clave']=="")
+            {   
             
-         
-            if($hasher->check($request['alum_clave'], $resultado['pass'])){
-                       
-                  
+                if($hasher->check($request['alum_clave'], $resultado['pass'])){
+                         
                 $usuario->idusuario = $loguser['id'];
                 $usuario->password = $hasher->hash($request['alum_clave_confirmar']);
                
-                if($this->Usuario->save($usuario)){
-                       $session->write('info',$request);
-                
-                
-                $this->requestAction('/alumno/actualizarinformaciongeneral'); 
-            
+                if($this->Usuario->save($usuario))
+                {
+                    $session->write('info',$request);
+                    $this->requestAction('/alumno/actualizarinformaciongeneral'); 
                 }
                  
                 }
-                else{
-
+                else
+                {
                          $this->Flash->error('Error al Actualizar Información, Contraseña no coincide');
-
-
-       
                 }
          
 
-            }else{
+            }
+            else
+            {
                     $session->write('info',$request);
                 
                 
@@ -360,7 +371,7 @@ class UsuarioController extends AppController
             }
         }
             $query = $this->Usuario->find('all')
-                     ->select(['alumno.idalumno','alumno.nombres','alumno.apellidos','alumno.edad','alumno.telefono_celular','alumno.telefono_fijo','alumno.foto_perfil','alumno.nombre_responsable','alumno.apellido_responsable','alumno.subcategoria_idsubcategoria','alumno.provincia_idprovincia'])
+                     ->select(['alumno.idalumno','alumno.nombres','alumno.apellidos','alumno.edad','alumno.telefono_celular','alumno.telefono_fijo','alumno.foto_perfil','alumno.nombre_responsable','alumno.apellido_responsable','alumno.subcategoria_idsubcategoria','alumno.provincia_idprovincia','alumno.disciplinafavorita'])
                      ->join([
                         'alumno' => [
                             'table' => 'alumno',
@@ -385,8 +396,13 @@ class UsuarioController extends AppController
             
             
             $session->write('info',$result[0]->alumno['idalumno']);
-            $this->requestAction('/horario/gethorarioalumnocompleto');
+            $this->requestAction('/horario/gethorarioalumnocompleto');//obtener horario de clases
             $this->set('horario_completo',$session->consume('info'));
+
+            $session->write('info',$result[0]->alumno['idalumno']);
+            $this->requestAction('/horario/obtenerhorarioalumno');//obtener horario de clases
+            $this->set('horarioalumno',$session->consume('info'));
+
             
             $this->requestAction('/categoria/getcategorias'); // informacion de categorias y subcategorias de cursos
             $this->set('infocategorias',$session->consume('info'));
@@ -406,8 +422,9 @@ class UsuarioController extends AppController
 
     public function registro()
     {
+    include 'Email.php';
 
-$this->viewBuilder()->setLayout('registro');
+    $this->viewBuilder()->setLayout('registro');
         $this->set('title','registro');
 
 
@@ -448,6 +465,7 @@ $this->viewBuilder()->setLayout('registro');
                     $this->requestAction('/alumno/add');
 
                     $this->Flash->success('Alumno creado con exito');
+                    registro($request['email'],$informacion_alumno['nombres'],$informacion_alumno['apellidos'],$informacion_alumno['telefonomovil']);
 
                     //auto login
 
@@ -486,7 +504,7 @@ $this->viewBuilder()->setLayout('registro');
                     $informacion_profesor['genero'] = $request['genero'];
                     $informacion_profesor['difucion'] = $request['difucion'];
                    
-                    if (isset($request['idreferido']) || $request['idreferido'] != '') {
+                    if (isset($request['idreferido']) || $request['idreferido'] != '' && $request['difucion'] == 'referido') {
 
                         /*Validacion de que existe referido y concuerdan los datos con este*/
                          $idref = explode('-', $request['idreferido']);
@@ -505,7 +523,7 @@ $this->viewBuilder()->setLayout('registro');
                                                         ])
                                                 ->where([ 'profesor.idprofesor =' => $idref[1]]);
                          
-                        }
+                        
                         
 
                      
@@ -514,7 +532,8 @@ $this->viewBuilder()->setLayout('registro');
                             $result[] = $item;
                         }
                             
-            
+                        
+                        }
 
                         if (isset($result)) {
                             
@@ -530,7 +549,13 @@ $this->viewBuilder()->setLayout('registro');
                         }
                         else
                         {
-                            $informacion_profesor['idreferido'] = 'XX-99999999-M';
+                            if ($request['difucion'] == 'referido') {
+                                $informacion_profesor['idreferido'] = 'XX-99999999-M';
+                            }
+                            else
+                            {    
+                                $informacion_profesor['idreferido'] = 'XX-0-M'; 
+                            }
                         }
 
 
@@ -808,6 +833,24 @@ public function login()
         if (isset($result)) {
             $this->set('listadoprofesores', $result);
         }
+        
+    }
+
+
+    public function generarsala($infosala)
+    {
+     $opentok = new OpenTok('46139512', '1c71da46f7fb644efc5d879ecbd25e6f41ef0575');
+// Replace with the correct session ID:
+    $token = $opentok->generateToken($infosala);
+   echo '<a id = "video-link" href="http://ec2-18-216-189-145.us-east-2.compute.amazonaws.com?sala='.$infosala.'&token='.$token.'" name="MP-Checkout" class="orange-ar-m-sq-arall" style="visibility: hidden;">Pay</a>';    
+        
+        echo "<script type='text/javascript'> 
+            
+        document.getElementById('video-link').click();
+        
+        </script>
+
+        ";
         
     }
 

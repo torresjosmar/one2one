@@ -111,19 +111,11 @@ class PagesController extends AppController
         $this->viewBuilder()->setLayout('default');
         $this->set('title','Busqueda');
 
-        if($this->request->is('post'))
-        {
-            $request = $this->request->data;
-            $this->set('busqueda', $request['buscar']);
-
-            //debug($this->request->data);
-            $session->write('info',$request['buscar']);
-            $this->requestAction('/profesor/buscarprofesor');
-            $resultado = $session->consume('info');
-            $this->set('profesores', $resultado);
-
-        
             /*llamando las categorias*/
+             $this->requestAction('/profesor/obtenerprofesores');
+
+            $this->set('profesores', $session->consume('info'));
+
             $this->requestAction('/categoria/obtenercategorias');
             $this->set('categoria', $session->consume('info'));
 
@@ -133,6 +125,17 @@ class PagesController extends AppController
             /*obtener profesores sugeridos*/
             $this->requestAction('profesor/obtenerprofesoressugeridos');
             $this->set('profesores_sugeridos',$session->consume('info'));
+        if($this->request->is('post'))
+        {
+            $request = $this->request->data;
+            $this->set('busqueda', $request['buscar']);
+
+            /*//debug($this->request->data);
+            $session->write('info',$request['buscar']);
+            $this->requestAction('/profesor/buscarprofesor');
+            $resultado = $session->consume('info');
+            $this->set('profesores', $resultado);
+			*/	
         }
     }
 
@@ -181,8 +184,7 @@ class PagesController extends AppController
             $session= $this->request->session();
             $loguser = $this->Auth->user(); // informacion de usuario logeado
             if($loguser['id_rol'] == 2){  
-            //echo "Soyprofesor";
-             //exit();  
+                $this->Flash->error('Contenido no disponible para Profesores');  
                 header('Location: http://18.191.211.97');    
             }
             if(!isset($idprofesor)){
@@ -225,6 +227,11 @@ class PagesController extends AppController
 
         public function orden()
         {
+          $loguser = $this->Auth->user(); // informacion de usuario logeado
+            if($loguser['id_rol'] == 2){  
+                $this->Flash->error('Contenido no disponible para Profesores');  
+                header('Location: http://18.191.211.97/usuario');    
+            }
             $session= $this->request->session();
              $this->viewBuilder()->setLayout('default');
              $this->set('title','Resumen de orden');
@@ -245,6 +252,12 @@ class PagesController extends AppController
 
         public function procesarorden()
         {
+
+          $loguser = $this->Auth->user(); // informacion de usuario logeado
+            if($loguser['id_rol'] == 2){  
+                $this->Flash->error('Contenido no disponible para Profesores');  
+                header('Location: http://18.191.211.97/usuario');    
+            }
         
         $session= $this->request->session();
         $resumen_compra = $session->read('resumen_compra');
@@ -347,12 +360,26 @@ class PagesController extends AppController
 
         public function pagoexitoso()
         {
+          $loguser = $this->Auth->user(); // informacion de usuario logeado
+            if($loguser['id_rol'] == 2){  
+                $this->Flash->error('Contenido no disponible para Profesores');  
+                header('Location: http://18.191.211.97/usuario');    
+            }
             $session= $this->request->session();
              $this->viewBuilder()->setLayout('default');
 
              if ($session->check('resumen_compra')) // control de seguridad para el ingreso a la pagina
              {
-                //$resumen_compra = $session->consume('resumen_compra'); // obtengo resumen de compra para hacer algo
+               /* $resumen_compra = $session->consume('resumen_compra'); 
+
+                print_r($resumen_compra);
+                $session->write('info',$resumen_compra['idprofesor']);
+                $this->requestAction('/profesor/obteneremail');
+                $info_profesor = $session->consume('info');
+                print_r($info_profesor);
+                exit();
+*/
+                // obtengo resumen de compra para hacer algo
              }
              else
             {

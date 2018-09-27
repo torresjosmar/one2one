@@ -19,13 +19,11 @@ class AlumnoController extends AppController
         $session = $this->request->session();
         $info_alumno = $session->consume('addinfo');
         $alumno = $this->Alumno->newEntity();
-
         $alumno->usuario_idusuario = $info_alumno['idusuario'];
         $alumno->nombres = $info_alumno['nombres'];
         $alumno->apellidos = $info_alumno['apellidos'];
         $alumno->edad = $info_alumno['edad'];
         $alumno->telefono_celular = $info_alumno['telefonomovil'];
- 
         $alumno->nombre_responsable = $info_alumno['nombresresponsable'];
         $alumno->apellido_responsable = $info_alumno['apellidosresponsable'];
         $alumno->genero = $info_alumno['genero'];
@@ -103,20 +101,20 @@ class AlumnoController extends AppController
 
         $request = $session->consume('info');
 
+
+
+
          $alumno = $this->Alumno->newEntity();
 
          $alumno->idalumno = $request['alum_id'];
          $alumno->nombres = $request['alum_nombres'];
          $alumno->apellidos = $request['alum_apellidos'];
-        // $alumno->email = $request['email'];
          $alumno->edad = $request['alum_edad'];
          $alumno->telefono_celular = $request['alum_telefonomovil'];
          $alumno->nombre_responsable = $request['alum_nombresresponsable'];
          $alumno->apellido_responsable = $request['alum_apellidosresponsable'];
-
-        // print_r($alumno);
-        // exit();
-
+         $alumno->disciplinafavorita = $request['disciplinafavorita'];
+        
 
          if ($this->Alumno->save($alumno)) 
          {

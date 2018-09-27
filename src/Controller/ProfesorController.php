@@ -1,5 +1,9 @@
 <?php
 namespace App\Controller;
+include 'opentok.phar';
+use OpenTok\OpenTok;
+use OpenTok\MediaMode;
+use OpenTok\ArchiveMode;
 
 use App\Controller\AppController;
 
@@ -15,6 +19,10 @@ class ProfesorController extends AppController
         $session = $this->request->session();
         $info_profesor = $session->consume('addinfo');
 
+        $apiObj = new OpenTok('46139512', '1c71da46f7fb644efc5d879ecbd25e6f41ef0575');
+        $session = $apiObj->createSession(array('mediaMode' => MediaMode::ROUTED));
+        $idsession = $session->getSessionId();//llamada al sdk de opentok para generar el id de session
+
 
         $profesor = $this->Profesor->newEntity();
 
@@ -23,18 +31,15 @@ class ProfesorController extends AppController
         $profesor->apellidos = $info_profesor['apellidos'];
         $profesor->edad = $info_profesor['edad'];
         $profesor->telefono_celular = $info_profesor['telefonomovil'];
-
+        $profesor->session_id = $idsession;
         $profesor->genero = $info_profesor['genero'];
         $profesor->pais = $info_profesor['pais'];
         $profesor->difucion = $info_profesor['difucion'];
         if (isset($info_profesor['idreferido']) && $info_profesor['idreferido'] != '') {
-
             $idref = explode('-', $info_profesor['idreferido']);
             $profesor->idreferido = $idref[1]; 
         }
-        
         $this->Profesor->save($profesor);
-
         $this->redirect(['controller'=>'usuario','action'=>'registro']);
     }
 
@@ -106,6 +111,77 @@ class ProfesorController extends AppController
         }
 
         $this->redirect(['controller' => 'usuario', 'action' => 'index']);
+    
+    }
+
+    public function setreferido()
+    {
+        $session = $this->request->session();
+        $profesor = $this->Profesor->newEntity();
+
+        $informacion = $session->consume('info');
+
+        $idprofesor = $informacion['idprofesor'];
+        $codigoreferido = $informacion['codigoreferido'];
+
+
+    
+                         $idref = explode('-', $codigoreferido);
+                        
+                        if (isset($idref[1])) {
+                            
+                        
+
+                            $query = $this->Profesor->find('all')
+                                                ->select(['idprofesor','genero','pais'])
+                        
+                                                ->where([ 'idprofesor =' => $idref[1]]);
+                         
+                        
+                        
+
+                        if (isset($query)) {
+                           foreach ($query as $item) 
+                        {
+                            $result[] = $item;
+                        }
+                        }
+                        
+                            
+                        
+                        }
+
+                        if (isset($result)) {
+
+                            if ($result[0]['pais'] == strtoupper($idref[0]) && $result[0]['idprofesor'] == $idref[1] && $result[0]['genero'][0] == strtoupper($idref[2])) {
+                                
+                                $codigo = $result[0]['idprofesor'];
+                    
+                            }
+                            else
+                            {
+                                $codigo = 99999999;
+                            }
+                        }
+                        else
+                        {
+                          $codigo = 99999999;
+                        }
+
+                        $profesor->idprofesor = $idprofesor;
+                        $profesor->idreferido = $codigo;
+
+                        if($this->Profesor->save($profesor))
+                        {
+                           //do nothing
+                        }
+
+                        else
+                        {
+                            $this->Flash->error('Error al Actualizar Información');
+                        }
+
+                        $this->redirect(['controller' => 'usuario', 'action' => 'index']);
     
     }
 
@@ -210,6 +286,9 @@ class ProfesorController extends AppController
 
          $especialidades = '';
 
+         if (isset($request['especialidad'])) 
+         {
+        
          for ($i=0; $i < count($request['especialidad']); $i++) { 
              if ($i != 0) 
              {
@@ -221,10 +300,13 @@ class ProfesorController extends AppController
             }
          }
 
+         $profesor->especialidad = $especialidades;
+        }
+
          $profesor->idprofesor = $request['idprofesor'];
          $profesor->nombres = $request['nombres'];
          $profesor->apellidos = $request['apellidos'];
-         $profesor->especialidad = $especialidades;
+         
 
          if ($this->Profesor->save($profesor)) 
          {
@@ -258,5 +340,32 @@ class ProfesorController extends AppController
         $session->write('info',$result);
         $this->redirect(['controller' => 'pages', 'action' => 'home']);
     }
-    	 
+/*
+    public function obteneremail(){
+
+        $session = $this->request->session();
+        $idprofesor = $session->consume('info');
+
+        $query = $this->Profesor->find('all')
+                     ->select(['profesor.idprofesor','profesor.nombres','profesor.apellidos','profesor.edad','profesor.especialidad','profesor.descripcion'])
+                     ->join([
+                        'usuario' => [
+                            'table' => 'usuario',
+                            'conditions' => 'profesor.usuario_idusuario = usuario.idusuario'
+                        ]
+                     ])
+                     ->where(['profesor.idprofesor' => $idprofesor]);
+
+
+    
+                foreach($query as $row)
+                        {
+                            $result[] = $row;
+                        } 
+
+             $session->write('info',$result); 
+             $this->redirect(['controller' => 'pages', 'action' => 'pagoexitoso']);
+         }
+    	 */
 }
+ 

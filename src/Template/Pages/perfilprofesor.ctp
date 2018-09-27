@@ -142,6 +142,41 @@ foreach ($horario as $key) {
 {
     text-align:center;
 }
+#form {
+  width: 250px;
+  margin: 0 auto;
+  height: 50px;
+}
+
+#form p {
+  text-align: center;
+}
+
+#form label {
+  font-size: 20px;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+label {
+  color: grey;
+}
+
+.clasificacion {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+
+label:hover,
+label:hover ~ label {
+  color: orange;
+}
+
+input[type="radio"]:checked ~ label {
+  color: orange;
+}
 
     </style>
 
@@ -157,10 +192,10 @@ foreach ($horario as $key) {
 
     <div class="modal-dialog">
 
-      <!-- Modal content-->
       <div class="modal-content">
+ 
         <div class="modal-header">
-         
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
         
@@ -181,7 +216,7 @@ Le recordamos a nuestros usuarios que el horario aquí es solo para visualizar l
 						<div class="row">
 							<!--Start Left Side -->
 							<div class="col-md-8 left-side-wrap-v1" id="profile-info-container">
-							 <a href="http://18.191.211.97/pages/lista"><i class="fas fa-arrow-left"></i> Volver a lista</a>
+							 <a href="http://18.191.211.97/pages/busqueda"><i class="fas fa-arrow-left"></i> Volver a lista</a>
 								<div class="shop-content-area">
 									<div class="row">
 										<div class="clear">
@@ -522,8 +557,54 @@ Le recordamos a nuestros usuarios que el horario aquí es solo para visualizar l
 									<div class="row">
 										<div class="clear">
 											<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
-												<h3  style=" float: left;font-size: 19px;color: #666;">Comentarios</h3><br>
+												<h3  style=" float: left;font-size: 19px;color: #666;">Opiniones de nuestros alumnos</h3><br>
 												
+                              <div class="row">
+                    <div class="clear">
+                      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+                               
+               
+                        <div class="caja-comentarios" style="    margin-bottom: 90px;">
+                          <form>
+  <p class="clasificacion">
+    <input id="radio1" type="radio" name="estrellas" value="5"><!--
+    --><label for="radio1">★</label><!--
+    --><input id="radio2" type="radio" name="estrellas" value="4"><!--
+    --><label for="radio2">★</label><!--
+    --><input id="radio3" type="radio" name="estrellas" value="3"><!--
+    --><label for="radio3">★</label><!--
+    --><input id="radio4" type="radio" name="estrellas" value="2"><!--
+    --><label for="radio4">★</label><!--
+    --><input id="radio5" type="radio" name="estrellas" value="1"><!--
+    --><label for="radio5">★</label>
+  </p>
+</form>
+
+<p>
+
+<?php  
+                     echo $this->Html->image(
+                        "user.png", 
+                        ["alt" => "imagen de usuario",
+                        "style" => "width: 50px; height: 50px;"]
+                      );
+                                     ?><span style="    width: 80%;
+    display: block;
+    float: right;
+    position: relative;">
+
+<strong style="text-transform: uppercase"> - </strong>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque id ultrices lacus. Proin vitae augue neque. Quisque venenatis tellus ut efficitur laoreet. Vestibulum urna ipsum, condimentum ac magna et, mattis imperdiet est. Nulla maximus ligula ut purus dictum suscipit. Fusce sollicitudin vestibulum mauris, rutrum vulputate purus.</span>
+
+                                     </p>
+                        </div>
+
+
+                           
+
+                      </div>  
+                    </div>
+                  </div>
 											</div>	
 										</div>
 									</div>
@@ -658,6 +739,7 @@ var hours = [];
 var ids = [];
 var idg = [];
 function sethora(){
+  console.log(localStorage.getItem("idsSession"));
 
 var c=0;
 var tot = document.getElementById("cantidad").value;	
@@ -736,7 +818,6 @@ document.getElementById("formu").submit();
 
 
 function  popup(url){
-
    window.open( "http://18.191.211.97/img/formaciones/"+url, "Soporte", "width=380,height=500, top=85,left=50");
 }
 

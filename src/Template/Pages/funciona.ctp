@@ -52,7 +52,7 @@
 						</p>
 					</div>
 					<div class="col-sm-12 col-md-12 col-lg-12 col-xl-12" style="text-align: center; padding: 3em 0 3em 0;"> 
-						<a href="./lista" class="btn-wi-3">VER TODOS LOS PROFESORES</a>
+						<a href="<?php echo $this->Url->build(["controller" => "Pages","action" => "lista"]); ?>" class="btn-wi-3">VER TODOS LOS PROFESORES</a>
 					</div>
 				</div>
 				<div class="row" style="padding: 5% 0% 5% 0%;">
@@ -92,7 +92,7 @@
 						</p>
 					</div>
 					<div class="col-sm-12 col-md-12 col-lg-12 col-xl-12" style="text-align: center; padding: 3em 0 3em 0;"> 
-						<a href="./lista" class="btn-wi-3">ENTRA A CONOCER LA LISTA DE PROFESORES</a>
+						<a href="<?php echo $this->Url->build(["controller" => "Pages","action" => "lista"]); ?>" class="btn-wi-3">ENTRA A CONOCER LA LISTA DE PROFESORES</a>
 					</div>
 				</div>
 				<div class="row panel-como-funciona">

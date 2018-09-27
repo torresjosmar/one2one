@@ -254,7 +254,7 @@ Gran saludo
                 <p class="desc">
                 	<b>One2one</b> te ofrece la oportunidad de conectarte desde donde estés. Interactuando Online con el profesor, de manera segura y cómoda.
                 </p>
-                <p class="act"><a href="./lista"><input type="submit" value="Ver tu listado de profesores" class="btn-wi-2"></p></a>
+                <p class="act"><a href="<?php echo $this->Url->build(["controller" => "Pages","action" => "lista"]); ?>"><input type="submit" value="Ver tu listado de profesores" class="btn-wi-2"></p></a>
             </div>
       </div>
 </div>
@@ -269,7 +269,7 @@ Gran saludo
                 <p class="desc">
                 	<b>One2one</b> te ofrece clases en vivo, personalizadas, interactuando con el profesor en tiempo real. Se adaptan a tu ritmo de aprendizaje. Tienes la posibilidad de interactuar, consultar y profundizar en lo que sea necesario. Podes buscar profesores de técnicas y estilos especificos para que puedas avanzar en el aprendizaje de manera eficaz.
                 </p>
-                <p class="act"><a href="./lista"><input type="submit" value="Comienza hoy!" class="btn-wi-2"></a></p>
+                <p class="act"><a href="<?php echo $this->Url->build(["controller" => "Pages","action" => "lista"]); ?>"><input type="submit" value="Comienza hoy!" class="btn-wi-2"></a></p>
             </div>
       </div>
       <div class="col-md-6">
@@ -351,7 +351,7 @@ Gran saludo
 							<div class="call-to-action-wrap">
 								
 								<h5 class="call-content">Accede a clases online desde cualquier parte del mundo aprendiendo rápidamente el instrumento que te gusta a través de clases personalizadas, grupales y de contenido, con un profesor en vivo a tu disposición.</h5>
-								<a class="estut-btn" href="./lista">Conoce tus profesores ahora</a>
+								<a class="estut-btn" href="<?php echo $this->Url->build(["controller" => "Pages","action" => "lista"]); ?>">Conoce tus profesores ahora</a>
 								
 							</div>
 						</div>

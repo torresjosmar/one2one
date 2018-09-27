@@ -16,7 +16,7 @@
     </thead>
 
      <tbody>
-     	 	<?php foreach ($listadoalumnos as $item) { ?>
+     	 	<?php   $cont= 0;  foreach ($listadoalumnos as $item) { ?>
       <tr>
       	<td><?php echo $item->alumno['nombres'].' '. $item->alumno['apellidos']; ?></td>
         <td><?php echo $item->alumno['telefono_celular']; ?></td>
@@ -40,31 +40,37 @@
                       ); ?>
 
     </td>
-<td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalalumno">Información</button></td>
+<td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#profesorm<?php echo $cont; ?>">Información</button></td>
        
       </tr>
-           <?php } ?>
+           <?php  $cont++; } ?>
   </tbody>
   </table>
 </div>
 
-
-<!-- Modal -->
-<div class="modal fade" id="modalalumno" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<?php $cont= 0; foreach ($listadoalumnos as $item2) { ?>
+ <!-- Modal -->
+<div class="modal fade" id="profesorm<?php echo $cont; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Informacion de usuario</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        ...
+        <p><b>Nombres:</b> <?php echo $item2->alumno['nombres']; ?></p>
+        <p><b>Apellidos:</b> <?php echo $item2->alumno['apellidos']; ?> </p>
+        <p><b>Edad:</b> <?php echo $item2->alumno['edad']; ?></p>
+        <p><b>Teléfono:</b> <?php echo $item2->alumno['telefono_celular']; ?></p>       
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
       </div>
     </div>
+    </form>
   </div>
 </div>
+
+<?php $cont++; } ?>

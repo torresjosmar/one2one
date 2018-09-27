@@ -8,6 +8,7 @@ $fecha_actual = date("Y-m-d G:i:s");
 //echo $fecha_actual;
 //debug($fecha_actual);
 //exit(); 
+
 $session = $this->request->session();
 //debug($redireccion);
 //echo $nombres_horario[0]['nombre_alumno'];
@@ -30,6 +31,7 @@ foreach ($especialidades as $itemrow) {
 
 ?> 
 
+<input type="hidden" id='fecha_actual' name="" value=<?php echo date("d/m/Y G:i:s",strtotime($fecha_actual));  ?>  >
 <?php 
 $item_id = 0;
 $cantidad_items =  count($horario);
@@ -175,17 +177,107 @@ if($horario==1){
     text-align:center;
 }
 
+#form {
+  width: 250px;
+  margin: 0 auto;
+  height: 50px;
+}
+
+#form p {
+  text-align: center;
+}
+
+#form label {
+  font-size: 20px;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+label .estrellas{
+  color: grey;
+}
+
+.clasificacion {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+
+label:hover,
+label:hover ~ label {
+  color: orange;
+}
+
+input[type="radio"]:checked ~ label {
+  color: orange;
+}
+
     </style>
 <!--Start Page Content -->
       <div class="page-content" style="    margin-top: 18px;">
       <div class="azul-linea">
         <ul style="    margin-left: 10%;">
-          <li id = "0tab" class="das-prof active"><a data-toggle="tab" href="#home"> Mi perfil</a></li>
+          <li id = "0tab" class="das-prof active"><a data-toggle="tab" href="#home"> Mi Perfil</a></li>
           <li  class="das-prof"><a data-toggle="tab" href="#menu1">Mis Alumnos</a></li>
           <li id = "2" class="das-prof"><a id = '2tab' data-toggle="tab"  href="#menu2">Clases Programadas</a></li>
           <li class="das-prof"><a data-toggle="tab" href="#menu3">Saldos</a></li>
         </ul>
       </div>
+<?php 
+
+$flaghorario = 0;
+if ($horario!= 1) {
+  foreach ($horario as $keyhorario) 
+{
+  if ($keyhorario['alumno_idalumno'] != 0) 
+  {
+      $flaghorario = 1; 
+  }
+}
+
+}
+
+if($horario!=1 && $flaghorario == 1){
+?>
+          <h4 style="    color: #666;
+    font-size: 16px;
+    font-weight: 300;padding: 3%;font-weight: bold;">Próxima clase en vivo en: </h4>
+
+              <div class="container-fluid">
+              
+
+
+              <div class="row">
+                  <div class= "counter" id="countdown"></div><i class="fa fa-clock-o" aria-hidden="true"></i>
+           
+    <div class="col-md-1"></div>
+      <div class="col-md-1"></div>       
+  <div class="col-md-2"><div class= "counter dia" id="countdownD" style="margin-bottom: 20px"> </div></div>
+  <div class="col-md-2"><div class= "counter hora" id="countdownH" style="margin-bottom: 20px"></div></div>
+  <div class="col-md-2"> <div class= "counter minuto" id="countdownM" style="margin-bottom: 20px"></div></div>
+  <div class="col-md-2"> <div class= "counter seg" id="countdownS" style="margin-bottom: 20px"></div></div>
+  <div class="col-md-1"></div>
+    <div class="col-md-1"></div>
+    
+</div>
+
+ <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-1"></div>
+  <div class="col-md-2"><p class="texto-horario" style="margin-bottom: 20px"> Días</p> </div>
+  <div class="col-md-2"><p class="texto-horario" style="margin-bottom: 20px"> Hora</p></div>
+  <div class="col-md-2"><p class="texto-horario" style="margin-bottom: 20px"> Minutos</p></div>
+  <div class="col-md-2"><p class="texto-horario" style="margin-bottom: 20px"> Segundos</p></div>
+    <div class="col-md-1"></div>
+    <div class="col-md-1"></div>
+</div>
+
+
+              </div>
+          
+
+<?php } ?>
         <div class="shop-area shop-page bg-white-2">
           <div class="container">
             <div class="row">
@@ -431,7 +523,47 @@ if($horario==1){
                     <div class="clear">
                       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
                         <h3>Opiniones de nuestros alumnos</h3>
-                        <p>Aún no posees comentarios</p>
+
+         
+               
+                        <div class="caja-comentarios" style="    margin-bottom: 90px;">
+                        	<form>
+  <p class="clasificacion">
+    <input id="radio1" type="radio" name="estrellas" value="5"><!--
+    --><label class="estrellas" for="radio1">★</label><!--
+    --><input id="radio2" type="radio" name="estrellas" value="4"><!--
+    --><label class="estrellas" for="radio2">★</label><!--
+    --><input id="radio3" type="radio" name="estrellas" value="3"><!--
+    --><label class="estrellas" for="radio3">★</label><!--
+    --><input id="radio4" type="radio" name="estrellas" value="2"><!--
+    --><label class="estrellas" for="radio4">★</label><!--
+    --><input id="radio5" type="radio" name="estrellas" value="1"><!--
+    --><label class="estrellas" for="radio5">★</label>
+  </p>
+</form>
+
+<p>
+
+<?php  
+                     echo $this->Html->image(
+                        "user.png", 
+                        ["alt" => "imagen de usuario",
+                        "style" => "width: 50px; height: 50px;"]
+                      );
+                                     ?><span style="    width: 80%;
+    display: block;
+    float: right;
+    position: relative;">
+
+<strong style="text-transform: uppercase"> </strong>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque id ultrices lacus. Proin vitae augue neque. Quisque venenatis tellus ut efficitur laoreet. Vestibulum urna ipsum, condimentum ac magna et, mattis imperdiet est. Nulla maximus ligula ut purus dictum suscipit. Fusce sollicitudin vestibulum mauris, rutrum vulputate purus.</span>
+
+                                     </p>
+                        </div>
+
+
+                           
+
                       </div>  
                     </div>
                   </div>
@@ -442,7 +574,9 @@ if($horario==1){
         <h3>Mis Alumnos</h3>
      
   <div class="row" >
-<b style="    padding-left: 105px;">Clases en estado:</b>
+<b style="padding-left: 105px;">Clases en estado:</b>
+<br>
+<small style="padding-left: 105px;">Zona Horaria America/Argentina/Buenos_Aires</small>
 <div class="row" style="padding-bottom: 40px;    padding-bottom: 40px;
     padding-left: 212px;
     padding-right: 150px;">
@@ -476,89 +610,264 @@ if($nombres_horario!=1){
 
 
 
-<?php  
-foreach ($nombres_horario as $item) {
- $semana_clase = date("W",strtotime($item['fecha_clase']));
- ?>
-   
-      <ul class="list-group" style="padding-left: 10%;width: 90%;">
-        
 
-  <?php if( strtotime($item['fecha_clase'])==strtotime($fecha_actual) && $item['hora']==$casi){
-if($primera_clase==0){
-$primera_clase=1;
-
-?>
-
-<input type="hidden" id='fecha_clase' name=<?php echo date("m/d/Y", strtotime($item['fecha_clase'])); ?> value= <?php echo $horario[1]['hora']; ?> >
-<?php } ?>
-<div class ="comenzar">
-
-  <li class="list-group-item list-group-item-success" id = <?php echo $dias[$item['dia']].'_'.$cont;  ?> >Tu Clase <?php echo $cont+1; ?> : Día : <b><?php echo $dias[$item['dia']]." ". date("d/m/Y", strtotime($item['fecha_clase'])); ; ?></b> Hora : <b><?php echo ($item['hora']).':00 '.' '.$item['nombre_alumno']." ".$item['apellido_alumno']; ?></b>
-<a  id=<?php echo $dias[$item['dia']].'_'.$cont.'btn';  ?>  href="http://ec2-18-216-189-145.us-east-2.compute.amazonaws.com/videochat/" target="_blank" class="btn btn-success" style="float: right;" >Ir a Clase</a>
-  </li>
-  </div>
-
-  <?php 
-  echo '<script type="text/javascript">
-console.log("casi comienzo"); 
-   console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').id);
-    document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.background ="#fbf589";  
-
-    </script>';
-     
-}
-else if(strtotime($fecha_actual)>strtotime($item['fecha_clase']) ){
-echo '';
-
-
-}else if(strtotime($fecha_actual)==strtotime($item['fecha_clase']) && $hora_clase< $item['hora']){
-echo '';
-
-}else if($semana_acutal==$semana_clase){
-if($primera_clase==0){
-$primera_clase=1;
-
-?>
-
-<input type="hidden" id='fecha_clase' name=<?php echo date("m/d/Y", strtotime($item['fecha_clase'])); ?> value= <?php echo $item['hora']; ?> >
-<?php } ?>
-<div class="disponible">
-  <li class="list-group-item list-group-item-success" id = <?php echo $dias[$item['dia']].'_'.$cont;  ?> >Tu Clase <?php echo $cont+1; ?> : Día : <b><?php echo $dias[$item['dia']]." ". date("d/m/Y", strtotime($item['fecha_clase'])); ; ?></b> Hora : <b><?php echo ($item['hora']).':00 '.' '.$item['nombre_alumno']." ".$item['apellido_alumno']; ?></b>
-<a  id=<?php echo $dias[$item['dia']].'_'.$cont.'btn';  ?>  href="http://ec2-18-216-189-145.us-east-2.compute.amazonaws.com/videochat/" target="_blank" class="btn btn-success" style="float: right;" >Ir a Clase</a>
-  </li>
-  </div>
-  <?php 
-echo '<script type="text/javascript"> 
-     document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.background = "#dff0d8";  
-     document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').style.display = "none";
-    </script>';
-}else{
-  if($primera_clase==0){
-
-$primera_clase=1; 
-?>
-
-<input type="hidden" id='fecha_clase' name=<?php echo date("m/d/Y", strtotime($item['fecha_clase'])); ?> value= <?php echo $item['hora']; ?> >
-<?php } ?>
-<div class ="proximo">
-  <li class="list-group-item list-group-item-success" id = <?php echo $dias[$item['dia']].'_'.$cont;  ?> >Tu Clase <?php echo $cont+1; ?> : Día : <b><?php echo $dias[$item['dia']]." ". date("d/m/Y", strtotime($item['fecha_clase'])); ; ?></b> Hora :<b><?php echo ($item['hora']).':00 '.' '.$item['nombre_alumno']." ".$item['apellido_alumno']; ?></b>
-<a  id=<?php echo $dias[$item['dia']].'_'.$cont.'btn';  ?>  href="http://ec2-18-216-189-145.us-east-2.compute.amazonaws.com/videochat/" target="_blank" class="btn btn-success" style="float: right;" >Ir a Clase</a>
-  </li>
-  </div>
-  <?php 
-echo '<script type="text/javascript"> 
-   // console.log(document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').id);
-    document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'"'.').style.background= "#d9ecf7";  
-   document.getElementById('.'"'.$dias[$item["dia"]].'_'.$cont.'btn'.'"'.').style.display = "none";
-    </script>';
-
-}
- ?>
-</ul>
-<?php $cont++; }
+<?php 
 } ?>
 
+<?php 
+
+
+
+  if ($horarioClases != 1) {
+
+    foreach ($horarioClases as $mihorario) {
+      $date = date("Y-m-d");
+      $fechaclase =  $mihorario['fecha_clase']->i18nFormat('YYY-MM-dd').' '.$mihorario['hora'].':00:00';
+      $fecha_actual = strtotime(date("d-m-Y H:00:00",time()));
+      $fecha_entrada = strtotime($fechaclase);
+      $week = date('W');
+      $year = date('Y');
+
+      for($day=0; $day<7; $day++)
+      {
+        $dias_semana[] = date('Y-m-d', strtotime($year."W".$week.$day))."\n";
+      }
+
+      if ($mihorario['dia'] == date('w')) { // validacion de clases en el mismo dia de la semana
+        if ($mihorario['hora'] == date('H')) {//mismo dia misma hora
+          $fecha_actual = strtotime(date("Y-m-d H:00:00",time()));
+          $fechaclase =  date('d-m-Y').' '.$mihorario['hora'].':00:00';
+          $fecha_entrada = strtotime($fechaclase);
+          $acumfecha = date('d-m-Y');
+          $arrayAux['fecha'] = $acumfecha.' '.$mihorario['hora'].':00:00';
+          $arrayAux['hora'] = $mihorario['hora'];
+          $arrayAux['flag'] = 1;
+          $arrayAux['idalumno'] = $mihorario['alumno_idalumno'];
+          $arrayAux['alumnonombres'] = $mihorario['alumno_nombres'];
+          $arrayAux['alumnoapellidos'] = $mihorario['alumno_apellidos'];
+          $arrayAux['dia'] = $mihorario['dia'];
+          $clases[] = $arrayAux;
+  
+          for ($i=0; $i < $mihorario['plan']-1 ; $i++) { 
+            $fechaclase2 =  strtotime ( $acumfecha."+ 7 days") ;
+            $arrayAux['fecha'] = date("d-m-Y",$fechaclase2).' '.$mihorario['hora'].':00:00';
+            $arrayAux['flag'] = 3;
+            $arrayAux['dia'] = $mihorario['dia'];
+            $arrayAux['hora'] = $mihorario['hora'];
+            $arrayAux['idalumno'] = $mihorario['alumno_idalumno'];
+            $arrayAux['alumnonombres'] = $mihorario['alumno_nombres'];
+            $arrayAux['alumnoapellidos'] = $mihorario['alumno_apellidos'];
+            $clases[] = $arrayAux;
+            $acumfecha = date("Y-m-d",$fechaclase2);
+          }
+      }
+
+      if ($mihorario['hora'] < date('H')) { // validacion mismo dia ya paso la hora de la clase mando a siguiente semana
+        $fecha_actual = strtotime(date("d-m-Y H:00:00",time()));
+        $fechaclase =  date('d-m-y').' '.$mihorario['hora'].':00:00';
+        $fecha_entrada = strtotime($fechaclase);
+        $acumfecha = date('d-m-Y');
+
+        for ($i=0; $i < $mihorario['plan'] ; $i++) { 
+        $fechaclase2 =  strtotime ( $acumfecha."+ 7 days") ;
+        $arrayAux['fecha'] = date("d-m-Y",$fechaclase2).' '.$mihorario['hora'].':00:00';
+        $arrayAux['hora'] = $mihorario['hora'];
+        $arrayAux['dia'] = $mihorario['dia'];
+        $arrayAux['idalumno'] = $mihorario['alumno_idalumno'];
+        $arrayAux['alumnonombres'] = $mihorario['alumno_nombres'];
+        $arrayAux['alumnoapellidos'] = $mihorario['alumno_apellidos'];
+        $arrayAux['flag'] = 3;
+        $clases[] = $arrayAux;
+        $acumfecha = date("Y-m-d",$fechaclase2);
+        }
+      }
+
+      if ($mihorario['hora'] > date('H')) { // validacion mismo dia aun no esta en la hora de la clase
+        $fecha_actual = strtotime(date("Y-m-d H:00:00",time()));
+        $fechaclase =  date('d-m-Y').' '.$mihorario['hora'].':00:00';
+        $fecha_entrada = strtotime($fechaclase);
+        $acumfecha = date('d-m-Y');
+        $arrayAux['fecha'] = $acumfecha.' '.$mihorario['hora'].':00:00';
+        $arrayAux['hora'] = $mihorario['hora'];
+        $arrayAux['dia'] = $mihorario['dia'];
+        $arrayAux['idalumno'] = $mihorario['alumno_idalumno'];
+        $arrayAux['alumnonombres'] = $mihorario['alumno_nombres'];
+        $arrayAux['alumnoapellidos'] = $mihorario['alumno_apellidos'];
+        $arrayAux['flag'] = 2;
+        $clases[] = $arrayAux;
+  
+        for ($i=0; $i < $mihorario['plan']-1 ; $i++) { 
+        $fechaclase2 =  strtotime ( $acumfecha."+ 7 days") ;
+        $arrayAux['fecha'] = date("d-m-Y",$fechaclase2).' '.$mihorario['hora'].':00:00';
+        $arrayAux['hora'] = $mihorario['hora'];
+        $arrayAux['dia'] = $mihorario['dia'];
+        $arrayAux['idalumno'] = $mihorario['alumno_idalumno'];
+        $arrayAux['alumnonombres'] = $mihorario['alumno_nombres'];
+        $arrayAux['alumnoapellidos'] = $mihorario['alumno_apellidos'];
+        $arrayAux['flag'] = 3;
+        $clases[] = $arrayAux;
+        $acumfecha = date("Y-m-d",$fechaclase2);
+        }
+      }
+
+    }
+    if ($mihorario['dia'] < date('w')) { // dia antes de la fecha de clases
+      $fecha_actual = strtotime(date("d-m-Y H:00:00",time()));
+      $fechaclase = $dias_semana[$mihorario['dia']];
+      $fecha_entrada = strtotime($fechaclase);
+      $acumfecha = $fechaclase;
+      for ($i=0; $i < $mihorario['plan'] ; $i++) { 
+      $fechaclase2 =  strtotime ( $acumfecha."+ 7 days") ;
+      $arrayAux['fecha'] = date("d-m-Y",$fechaclase2).' '.$mihorario['hora'].':00:00';
+      $arrayAux['hora'] = $mihorario['hora'];
+      $arrayAux['dia'] = $mihorario['dia'];
+      $arrayAux['idalumno'] = $mihorario['alumno_idalumno'];
+      $arrayAux['alumnonombres'] = $mihorario['alumno_nombres'];
+      $arrayAux['alumnoapellidos'] = $mihorario['alumno_apellidos'];
+      $arrayAux['flag'] = 3;
+      $clases[] = $arrayAux;
+      $acumfecha = date("Y-m-d",$fechaclase2);
+      }
+    }
+    if ($mihorario['dia'] > date('w')) { // dia despues de la fecha de clases
+      $fecha_actual = strtotime(date("d-m-Y H:00:00",time()));
+      $fechaclase = $dias_semana[$mihorario['dia']];
+      $fecha_entrada = strtotime($fechaclase);
+      $acumfecha = $fechaclase;
+      $arrayAux['fecha'] = $acumfecha.' '.$mihorario['hora'].':00:00';
+      $arrayAux['hora'] = $mihorario['hora'];
+      $arrayAux['dia'] = $mihorario['dia'];
+      $arrayAux['idalumno'] = $mihorario['alumno_idalumno'];
+      $arrayAux['alumnonombres'] = $mihorario['alumno_nombres'];
+      $arrayAux['alumnoapellidos'] = $mihorario['alumno_apellidos'];
+      $arrayAux['flag'] = 3;
+      $clases[] = $arrayAux; 
+      for ($i=0; $i < $mihorario['plan']-1 ; $i++) { 
+        $fechaclase2 =  strtotime ( $acumfecha."+ 7 days") ;
+        $arrayAux['fecha'] = date("d-m-Y",$fechaclase2).' '.$mihorario['hora'].':00:00';
+        $arrayAux['dia'] = $mihorario['dia'];
+        $arrayAux['hora'] = $mihorario['hora'];
+        $arrayAux['idalumno'] = $mihorario['alumno_idalumno'];
+        $arrayAux['alumnonombres'] = $mihorario['alumno_nombres'];
+        $arrayAux['alumnoapellidos'] = $mihorario['alumno_apellidos'];
+        $arrayAux['flag'] = 3;
+        $clases[] = $arrayAux;
+        $acumfecha = date("Y-m-d",$fechaclase2);
+      }
+    }
+
+//variable $clases ya seteada y configurada para mostrar en el panel de usuario
+//flags de horas de clase 
+// 1: clase en proceso (hora actual)
+// 2: clase proxima a comenzar (mismo dia)
+// 3: clase lejos de comenzar
+
+asort($clases);
+unset($claseEnProceso);
+unset($clasePorComenzar);
+unset($claseProxima);
+foreach ($clases as $itemclase) {
+  if ($itemclase['flag']==1) {
+    $claseEnProceso[] = $itemclase;
+  }
+  if ($itemclase['flag']==2) {
+    $clasePorComenzar[] = $itemclase;
+  }
+  if ($itemclase['flag']==3) {
+    $claseProxima[] = $itemclase;
+  }
+}
+
+}
+
+if (isset($clasePorComenzar)) 
+{
+  sort($clasePorComenzar);
+}
+
+if (isset($claseProxima)) 
+{
+  sort($claseProxima);
+}
+
+
+?>
+<?php
+
+if (isset($claseEnProceso)) {
+?>
+  <ul class="list-group" style="padding-left: 10%; width: 90%;">
+  <li class="list-group-item list-group-item-success" style="background: #fbf589;">
+    <b>Tu Clase el dia</b> <?php echo $dias[$claseEnProceso[0]['dia']] ?>  <b>Fecha:</b> <?php echo $claseEnProceso[0]['fecha'] ?> <b>Hora:</b> <?php echo $claseEnProceso[0]['hora'] ?>:00
+    <br>
+    <b>Alumno: </b> <?php echo $claseEnProceso[0]['alumnonombres'].' '.$claseEnProceso[0]['alumnoapellidos']; ?>
+
+    <p>
+      <a href="<?php echo $this->Url->build([
+    "controller" => "usuario",
+    "action" => "generarsala",
+    $info_profesor[0]->profesor['session_id'],
+]); ?>" class="btn btn-primary" style="margin-top: 20px; margin-bottom: 0px;">Ver Clase</a>
+    </p>
+    
+  </li>
+</ul>
+
+<input type="hidden" id='fecha_clase' name="<?php echo $claseEnProceso[0]['hora']; ?>" value=<?php echo date("m/d/Y",strtotime($claseEnProceso[0]['fecha']));  ?>  >
+<?php
+}
+
+if(isset($clasePorComenzar))
+{
+  foreach ($clasePorComenzar as $itemClasePorComenzar) {  
+?>
+  <ul class="list-group" style="padding-left: 10%; width: 90%;">
+  <li class="list-group-item list-group-item-success" <?php if(($itemClasePorComenzar['hora']-date('h')) == 1){echo 'style="background: #fbf589;"';}else{ echo 'style="background: #dff0d8;"'; } ?> >
+    <b>Tu Clase el dia</b> <?php echo $dias[$itemClasePorComenzar['dia']] ?>  <b>Fecha:</b> <?php echo $itemClasePorComenzar['fecha'] ?> <b>Hora:</b> <?php echo $itemClasePorComenzar['hora'] ?>:00
+    <br>
+    <b>Alumno: </b> <?php echo $itemClasePorComenzar['alumnonombres'].' '.$itemClasePorComenzar['alumnoapellidos']; ?>
+  </li>
+</ul>
+
+<?php 
+  } 
+?>
+
+<input type="hidden" id='fecha_clase' name="<?php echo $clasePorComenzar[0]['hora']; ?>" value=<?php echo date("m/d/Y",strtotime($clasePorComenzar[0]['fecha']));  ?>  >
+<?php 
+}
+
+if(isset($claseProxima))
+{
+?>
+  <?php 
+    $contProxima = 0;
+    foreach ($claseProxima as $itemClaseProxima) {
+    ?>
+
+    <ul class="list-group" style="padding-left: 10%; width: 90%;">
+      <li class="list-group-item list-group-item-success"  style="background: #d9edf7;">
+        <b>Tu Clase el dia</b> <?php echo $dias[ $itemClaseProxima['dia']] ?>  <b>Fecha:</b> <?php echo $itemClaseProxima['fecha'] ?> <b>Hora:</b> <?php echo $itemClaseProxima['hora'] ?>:00
+    <br>
+    <b>Alumno: </b> <?php echo $itemClaseProxima['alumnonombres'].' '.$itemClaseProxima['alumnoapellidos']; ?>
+      </li>
+  </ul>
+
+    <?php
+    $contProxima ++;
+    }
+   ?>
+  
+<input type="hidden" id='fecha_clase' name="<?php echo $claseProxima[0]['hora']; ?>" value=<?php echo date("m/d/Y",strtotime($claseProxima[0]['fecha']));  ?>  >
+
+<?php
+}
+
+
+  }//fin if horarioClase
+
+
+ ?>
 
 </div>
               
@@ -798,10 +1107,11 @@ echo '<script type="text/javascript">
                                 <?php
                               }
                              ?>
+
+                             <label>Tu código de referido es:</label>
                              <a href="perfilprofesor/<?php echo $info_profesor[0]->profesor['idprofesor'].'-'.$info_profesor[0]->profesor['nombres']; ?>" > <h3><?php echo $info_profesor[0]->profesor['pais'].'-'.$info_profesor[0]->profesor['idprofesor'].'-'.$info_profesor[0]->profesor['genero'][0]; ?></h3></a>
                       <div>
-                      <h4>Próxima clase en vivo en: </h4>
-                      <div class= "counter" id="countdown"></div><i class="fa fa-clock-o" aria-hidden="true"></i>
+                    
                       </div>
                       
                     </div>
@@ -824,10 +1134,36 @@ echo '<script type="text/javascript">
                                     <div class="form-group">
                                         <input type="hidden" name="idprofesor" value="<?php echo $info_profesor[0]->profesor['idprofesor'] ?>">
                                        
-                                        <input type="text" class="form-control" id="confirmacioncodigoreferido" placeholder="XX-00-x">
+                                        <input type="text" class="form-control" id="confirmacioncodigoreferido" name="confirmacioncodigoreferido" placeholder="XX-00-x" style="text-align: center;">
                                     </div>
 
                                     <input type="submit" name="confirmar" value="Confirmar" class="btn btn-danger">
+                                  </form>
+                                </div>
+                              </div>
+                              </div>
+                            <?php             
+                              }
+                            ?>
+
+                             <?php 
+
+                              if ($info_profesor[0]->profesor['idreferido'] == 0) 
+                              {
+                            ?><div style="padding: 2%;">
+                              <div class="alert alert-success" role="alert">
+                                <b><i class="fas fa-exclamation-circle"></i> Aún no haz registrado a un referido.</b> que esperas ingresa el codigo de tu referido y comienza a disfrutar de los beneficios
+                                <br>
+                                <br>
+                                <div class="row">
+                                  <?= $this->Form->create() ?>
+                                    <div class="form-group">
+                                        <input type="hidden" name="idprofesor" value="<?php echo $info_profesor[0]->profesor['idprofesor'] ?>">
+                                       
+                                        <input type="text" class="form-control" id="confirmacioncodigoreferido" name="confirmacioncodigoreferido" placeholder="XX-00-x" style="text-align: center;">
+                                    </div>
+
+                                    <input type="submit" name="confirmar" value="Confirmar" class="btn btn-success">
                                   </form>
                                 </div>
                               </div>
@@ -1273,6 +1609,20 @@ var alumnos = [{}];
 
 */
 
+////////////7
+ var _second = 1000;
+    var _minute = _second * 60;
+    var _hour = _minute * 60;
+    var _day = _hour * 24;
+    var timer;
+////////////
+var hora_clase = document.getElementById("fecha_clase").name; 
+var fecha_clase = document.getElementById("fecha_clase").value; 
+var fecha_actual = document.getElementById("fecha_actual").value; 
+
+var end = new Date(fecha_clase+' '+hora_clase+':00:00');
+console.log(fecha_clase+' '+hora_clase);
+console.log(end);
 
 
 function sethora(){
@@ -1524,18 +1874,7 @@ var elements = document.getElementsByClassName('proximo');
 }
 
 }
-////////////7
- var _second = 1000;
-    var _minute = _second * 60;
-    var _hour = _minute * 60;
-    var _day = _hour * 24;
-    var timer;
-////////////
-var fecha_clase = document.getElementById("fecha_clase").name; 
-var hora_clase = document.getElementById("fecha_clase").value; 
 
-var end = new Date(fecha_clase+' '+hora_clase+':00:00');
-console.log(fecha_clase);
 function showRemaining() {
         var now = new Date();
         var distance = end - now;
@@ -1551,10 +1890,10 @@ function showRemaining() {
         var minutes = Math.floor((distance % _hour) / _minute);
         var seconds = Math.floor((distance % _minute) / _second);
 
-        document.getElementById('countdown').innerHTML = days + ' dias, ';
-        document.getElementById('countdown').innerHTML += hours + ' horas, ';
-        document.getElementById('countdown').innerHTML += minutes + ' minutos y ';
-        document.getElementById('countdown').innerHTML += seconds + ' segundos';
+        document.getElementById('countdownD').innerHTML = days ;
+        document.getElementById('countdownH').innerHTML = hours;
+        document.getElementById('countdownM').innerHTML = minutes;
+        document.getElementById('countdownS').innerHTML = seconds;
     }
 
     timer = setInterval(showRemaining, 1000);

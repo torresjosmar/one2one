@@ -44,8 +44,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <link rel="stylesheet" href="assets/css/custom.css">
     <link rel="stylesheet" href="assets/css/stylos.css">
     <link rel="stylesheet" href="assets/css/custom-themes.css">
-    <link rel="shortcut icon" type="image/png" href="assets/img/favicon.png" />
-
+  
 		
 
 	
